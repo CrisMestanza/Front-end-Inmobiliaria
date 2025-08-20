@@ -29,7 +29,7 @@ const RANGOS_PRECIO = [
 function MyMap() {
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "AIzaSyA0dsaDHTO3rx48cyq61wbhItaZ_sWcV94",
+    googleMapsApiKey: "",
     libraries: ["places"],
   });
 
