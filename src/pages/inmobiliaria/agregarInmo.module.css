@@ -1,0 +1,155 @@
+/* ============= PRINCIPAL ============= */
+.principal {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #f9fafb;
+}
+
+.addBtn{
+  background-color: rgb(0, 119, 255);
+}
+
+.tableStyle{
+  background-color: rgb(0, 119, 255);
+}
+
+
+
+
+
+/* ============= OVERLAY DEL MODAL ============= */
+.modalOverlay {
+  position: fixed;           /* Lo fija sobre todo */
+  top: 0;                    /* Abarca toda la pantalla */
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); /* Oscurece el fondo */
+  display: flex;
+  justify-content: center;   /* Centra horizontal */
+  align-items: center;       /* Centra vertical */
+  z-index: 1000;             /* Se asegura que esté arriba */
+}
+
+/* ============= CONTENIDO DEL MODAL ============= */
+.modalContent {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ============= BOTÓN CERRAR ============= */
+.closeBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgb(0, 119, 255);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* ============= FORMULARIO ============= */
+.formContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.formContainer label {
+  margin: 10px 0 5px;
+  color: #000;
+  font-weight: bold;
+}
+
+.input {
+  padding: 8px 12px;
+
+  color: rgb(0, 0, 0);
+  background-color: #fdfdfd; /* Fondo azul */
+  border-radius: 5px;
+}
+
+textarea.input {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* En tu contenedor padre de los puntos */
+.puntosContainer {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column; /* Apila hijos verticalmente */
+  gap: 10px;              /* Espacio entre ellos */
+}
+
+.addBtn {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgb(0, 119, 255);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.removeBtn {
+  margin-top: 5px;
+  padding: 5px 10px;
+  background: rgb(255, 60, 60);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submitBtn {
+  margin-top: 20px;
+  padding: 12px 20px;
+  background: rgb(0, 119, 255);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.previewContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.previewItem {
+  position: relative;
+}
+
+.previewItem img {
+  width: 100px;
+  height: auto;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.previewItem .removeBtn {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  border-radius: 50%;
+  background: rgb(255, 60, 60);
+}
