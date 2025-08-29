@@ -7,43 +7,120 @@
   background: #f9fafb;
 }
 
-.addBtn{
-  background-color: rgb(0, 119, 255);
+.principal h1 {
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #0077ff, #00b4d8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-.tableStyle{
-  background-color: rgb(0, 119, 255);
+/* ============= BOTONES ============= */
+.addBtn,
+.submitBtn {
+  margin-top: 10px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #0077ff, #00c6ff);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
+.addBtn:hover,
+.submitBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
 
+.removeBtn {
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #ff3c3c, #ff7070);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
 
+.removeBtn:hover {
+  background: linear-gradient(135deg, #e03131, #ff5252);
+  transform: scale(1.05);
+}
 
+/* ============= TABLA ============= */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+thead tr {
+  background: linear-gradient(90deg, #0077ff, #00b4d8);
+  color: white;
+}
+
+.tableStyle {
+  padding: 12px;
+  font-weight: 600;
+}
+
+tbody tr:nth-child(even) {
+  background: #f8f9fa;
+}
+
+tbody tr:hover {
+  background: #e0f7fa;
+  transition: all 0.2s;
+}
 
 /* ============= OVERLAY DEL MODAL ============= */
 .modalOverlay {
-  position: fixed;           /* Lo fija sobre todo */
-  top: 0;                    /* Abarca toda la pantalla */
+  position: fixed;
+  top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.5); /* Oscurece el fondo */
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center;   /* Centra horizontal */
-  align-items: center;       /* Centra vertical */
-  z-index: 1000;             /* Se asegura que esté arriba */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 /* ============= CONTENIDO DEL MODAL ============= */
 .modalContent {
   background: #ffffff;
   padding: 30px;
-  border-radius: 10px;
+  border-radius: 12px;
   width: 90%;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* ============= BOTÓN CERRAR ============= */
@@ -59,6 +136,9 @@
   height: 32px;
   cursor: pointer;
   font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ============= FORMULARIO ============= */
@@ -74,11 +154,18 @@
 }
 
 .input {
-  padding: 8px 12px;
-
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
   color: rgb(0, 0, 0);
-  background-color: #fdfdfd; /* Fondo azul */
-  border-radius: 5px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.input:focus {
+  border: 1px solid #0077ff;
+  outline: none;
+  box-shadow: 0 0 6px rgba(0, 119, 255, 0.3);
 }
 
 textarea.input {
@@ -86,45 +173,15 @@ textarea.input {
   resize: vertical;
 }
 
-/* En tu contenedor padre de los puntos */
+/* ============= PUNTOS ============= */
 .puntosContainer {
   margin-top: 10px;
   display: flex;
-  flex-direction: column; /* Apila hijos verticalmente */
-  gap: 10px;              /* Espacio entre ellos */
+  flex-direction: column;
+  gap: 10px;
 }
 
-.addBtn {
-  margin-top: 10px;
-  padding: 8px 12px;
-  background: rgb(0, 119, 255);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.removeBtn {
-  margin-top: 5px;
-  padding: 5px 10px;
-  background: rgb(255, 60, 60);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.submitBtn {
-  margin-top: 20px;
-  padding: 12px 20px;
-  background: rgb(0, 119, 255);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
+/* ============= PREVIEW DE IMÁGENES ============= */
 .previewContainer {
   display: flex;
   flex-wrap: wrap;

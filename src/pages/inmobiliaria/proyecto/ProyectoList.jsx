@@ -1,29 +1,29 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Aside from "../../../components/Aside";
-import InmobiliariaModal from "./agregarLote"; // ✅ usa el nombre correcto
+import ProyectoModal from "./agregarProyecto";
 import style from "../agregarInmo.module.css";
 
-export default function LotesList() {
-  const { idproyecto } = useParams();
+export default function ProyectosList() {
+  const { idinmobilaria } = useParams();
   const navigate = useNavigate();
-  const [lotes, setLotes] = useState([]);
-  const [showModal, setShowModal] = useState(false); // ✅ controla modal
+  const [proyectos, setProyectos] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const fetchLotes = async () => {
+    const fetchProyectos = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:8000/api/getLoteProyecto/${idproyecto}`
+          `http://127.0.0.1:8000/api/getProyectoInmo/${idinmobilaria}`
         );
         const data = await res.json();
-        setLotes(data);
+        setProyectos(data);
       } catch (err) {
-        console.error("Error al cargar lotes:", err);
+        console.error("Error al cargar proyectos:", err);
       }
     };
-    fetchLotes();
-  }, [idproyecto]);
+    fetchProyectos();
+  }, [idinmobilaria]);
 
   return (
     <div className={style.principal}>
@@ -36,7 +36,9 @@ export default function LotesList() {
           background: "#fff",
         }}
       >
-        <h1 style={{ color: "black", textAlign: "center" }}>LISTA DE LOTES</h1>
+        <h1 style={{ color: "black", textAlign: "center" }}>
+          LISTA DE PROYECTOS
+        </h1>
 
         <div
           style={{
@@ -67,7 +69,7 @@ export default function LotesList() {
                 N°
               </th>
               <th className={style.tableStyle} style={{ padding: "10px" }}>
-                Nombre
+                Nombre Proyecto
               </th>
               <th className={style.tableStyle} style={{ padding: "10px" }}>
                 Descripción
@@ -82,7 +84,7 @@ export default function LotesList() {
                 Longitud
               </th>
               <th className={style.tableStyle} style={{ padding: "10px" }}>
-                Tipo
+                Ver Lotes
               </th>
               <th className={style.tableStyle} style={{ padding: "10px" }}>
                 Acciones
@@ -90,8 +92,11 @@ export default function LotesList() {
             </tr>
           </thead>
           <tbody>
-            {lotes.map((lote, index) => (
-              <tr key={lote.idlote} style={{ borderBottom: "1px solid #ccc" }}>
+            {proyectos.map((proyecto, index) => (
+              <tr
+                key={proyecto.idproyecto}
+                style={{ borderBottom: "1px solid #ccc" }}
+              >
                 <td
                   style={{
                     padding: "10px",
@@ -108,7 +113,7 @@ export default function LotesList() {
                     textAlign: "center",
                   }}
                 >
-                  {lote.nombre}
+                  {proyecto.nombreproyecto}
                 </td>
                 <td
                   style={{
@@ -117,7 +122,7 @@ export default function LotesList() {
                     textAlign: "center",
                   }}
                 >
-                  {lote.descripcion}
+                  {proyecto.descripcion}
                 </td>
                 <td
                   style={{
@@ -126,7 +131,7 @@ export default function LotesList() {
                     textAlign: "center",
                   }}
                 >
-                  {lote.precio}
+                  {proyecto.precio}
                 </td>
                 <td
                   style={{
@@ -135,7 +140,7 @@ export default function LotesList() {
                     textAlign: "center",
                   }}
                 >
-                  {lote.latitud}
+                  {proyecto.latitud}
                 </td>
                 <td
                   style={{
@@ -144,45 +149,42 @@ export default function LotesList() {
                     textAlign: "center",
                   }}
                 >
-                  {lote.longitud}
+                  {proyecto.longitud}
                 </td>
-                <td
-                  style={{
-                    padding: "10px",
-                    color: "black",
-                    textAlign: "center",
-                  }}
-                >
-                  {lote.tipoinmobiliaria?.nombre}
-                </td>
-                <td
-                  style={{
-                    padding: "10px",
-                    color: "black",
-                    textAlign: "center",
-                  }}
-                >
+                <td style={{ textAlign: "center", color: "black" }}>
                   <button
-                    onClick={() => handleEdit(item.idproyecto)}
+                    onClick={() => navigate(`/lotes/${proyecto.idproyecto}`)}
                     className={style.addBtn}
                   >
-                    ✏️
-                  </button>{" "}
+                    👁️ Ver
+                  </button>
+                </td>
+                <td
+                  style={{
+                    padding: "10px",
+                    color: "black",
+                    textAlign: "center",
+                  }}
+                >
+                  <button className={style.addBtn}>✏️</button>{" "}
                   <button
                     onClick={async () => {
                       if (
                         window.confirm(
-                          "¿Seguro que quieres eliminar este lote?"
+                          "¿Seguro que quieres eliminar este proyecto?"
                         )
                       ) {
                         await fetch(
-                          `http://127.0.0.1:8000/api/deleteLote/${lote.idlote}/`,
+                          `http://127.0.0.1:8000/api/deleteProyecto/${proyecto.idproyecto}/`,
                           {
                             method: "PUT",
                           }
                         );
-                        // recargar lista
-                        setLotes(lotes.filter((l) => l.idlote !== lote.idlote));
+                        setProyectos(
+                          proyectos.filter(
+                            (p) => p.idproyecto !== proyecto.idproyecto
+                          )
+                        );
                       }
                     }}
                     className={style.removeBtn}
@@ -196,9 +198,9 @@ export default function LotesList() {
         </table>
 
         {showModal && (
-          <InmobiliariaModal
+          <ProyectoModal
             onClose={() => setShowModal(false)}
-            idproyecto={idproyecto}
+            idinmobilaria={idinmobilaria}
           />
         )}
       </div>

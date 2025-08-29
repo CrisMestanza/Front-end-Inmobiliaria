@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Aside from '../../components/Aside';
-import InmobiliariaModal from './modalAgregar';
-import InmobiliariaEdit from './modalEditar';
-import style from './agregarInmo.module.css';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Aside from "../../components/Aside";
+import InmobiliariaModal from "./modalAgregar";
+import InmobiliariaEdit from "./modalEditar";
+import style from "./agregarInmo.module.css";
 
 export default function Principal() {
   const [showModal, setShowModal] = useState(false);
@@ -15,11 +15,11 @@ export default function Principal() {
   useEffect(() => {
     const fetchInmobiliarias = async () => {
       try {
-        const res = await fetch('https://apiinmo.y0urs.com/api/listInmobiliaria/');
+        const res = await fetch("http://127.0.0.1:8000/api/listInmobiliaria/");
         const data = await res.json();
         setInmobiliarias(data);
       } catch (err) {
-        console.error('Error al cargar inmobiliarias:', err);
+        console.error("Error al cargar inmobiliarias:", err);
       }
     };
     fetchInmobiliarias();
@@ -31,21 +31,28 @@ export default function Principal() {
   };
 
   const handleDelete = async (idinmobilaria) => {
-    const confirm = window.confirm('¿Estás seguro de eliminar esta inmobiliaria?');
+    const confirm = window.confirm(
+      "¿Estás seguro de eliminar esta inmobiliaria?"
+    );
     if (confirm) {
       try {
-        const res = await fetch(`https://apiinmo.y0urs.com/api/deleteInmobiliaria/${idinmobilaria}/`, {
-          method: 'PUT',
-        });
+        const res = await fetch(
+          `http://127.0.0.1:8000/api/deleteInmobiliaria/${idinmobilaria}/`,
+          {
+            method: "PUT",
+          }
+        );
         if (res.ok) {
-          alert('Eliminado correctamente ✅');
-          setInmobiliarias(inmobiliarias.filter(item => item.idinmobilaria !== idinmobilaria));
+          alert("Eliminado correctamente ✅");
+          setInmobiliarias(
+            inmobiliarias.filter((item) => item.idinmobilaria !== idinmobilaria)
+          );
         } else {
-          alert('Error al eliminar ❌');
+          alert("Error al eliminar ❌");
         }
       } catch (err) {
         console.error(err);
-        alert('Error de red 🚫');
+        alert("Error de red 🚫");
       }
     }
   };
@@ -55,21 +62,38 @@ export default function Principal() {
   };
 
   const handleInmobiliariaUpdated = (actualizada) => {
-    setInmobiliarias(prev =>
-      prev.map(item => item.idinmobilaria === actualizada.idinmobilaria ? actualizada : item)
+    setInmobiliarias((prev) =>
+      prev.map((item) =>
+        item.idinmobilaria === actualizada.idinmobilaria ? actualizada : item
+      )
     );
   };
 
   return (
     <div className={style.principal}>
       <Aside />
-      <div style={{ flexGrow: 1, padding: "40px", overflowY: "auto", background: "#fff" }}>
-        <h1 style={{ color: "black", textAlign: "center" }}>GESTIÓN DE INMOBILIARIA</h1>
+      <div
+        style={{
+          flexGrow: 1,
+          padding: "40px",
+          overflowY: "auto",
+          background: "#fff",
+        }}
+      >
+        <h1 style={{ color: "black", textAlign: "center" }}>
+          GESTIÓN DE INMOBILIARIA
+        </h1>
         <button onClick={() => setShowModal(true)} className={style.addBtn}>
           Agregar Inmobiliaria
         </button>
 
-        <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
+        <table
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            marginTop: "20px",
+          }}
+        >
           <thead>
             <tr style={{ background: "#0077b6", color: "#fff" }}>
               <th className={style.tableStyle}>N°</th>
@@ -86,25 +110,69 @@ export default function Principal() {
           </thead>
           <tbody>
             {inmobiliarias.map((item, index) => (
-              <tr key={item.idinmobilaria} style={{ borderBottom: "1px solid #ccc" }}>
-                <td style={{ textAlign: "center",  color: "black" }}>{index + 1}</td>
-                <td style={{ textAlign: "center", color: "black" }}>{item.nombreinmobiliaria}</td>
-                <td style={{ textAlign: "center", color: "black"}}>
-                  <a href={item.facebook} style={{ color: "black" }} target="_blank" rel="noreferrer">{item.facebook}</a>
+              <tr
+                key={item.idinmobilaria}
+                style={{ borderBottom: "1px solid #ccc" }}
+              >
+                <td style={{ textAlign: "center", color: "black" }}>
+                  {index + 1}
                 </td>
-                <td style={{ textAlign: "center",  color: "black" }}>{item.whatsapp}</td>
-                <td style={{ textAlign: "center",  color: "black" }}>
-                  <a href={item.pagina} style={{ color: "black" }} target="_blank" rel="noreferrer">{item.pagina}</a>
+                <td style={{ textAlign: "center", color: "black" }}>
+                  {item.nombreinmobiliaria}
                 </td>
-                <td style={{ textAlign: "center",  color: "black" }}>{item.latitud}</td>
-                <td style={{ textAlign: "center",  color: "black" }}>{item.longitud}</td>
-                <td style={{ textAlign: "center",  color: "black" }}>{item.descripcion}</td>
-                <td style={{ textAlign: "center",  color: "black" }}>
-                  <button onClick={() => navigate(`/lotes/${item.idinmobilaria}`)} className={style.addBtn}>👁️ Ver</button>
+                <td style={{ textAlign: "center", color: "black" }}>
+                  <a
+                    href={item.facebook}
+                    style={{ color: "black" }}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {item.facebook}
+                  </a>
+                </td>
+                <td style={{ textAlign: "center", color: "black" }}>
+                  {item.whatsapp}
+                </td>
+                <td style={{ textAlign: "center", color: "black" }}>
+                  <a
+                    href={item.pagina}
+                    style={{ color: "black" }}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {item.pagina}
+                  </a>
+                </td>
+                <td style={{ textAlign: "center", color: "black" }}>
+                  {item.latitud}
+                </td>
+                <td style={{ textAlign: "center", color: "black" }}>
+                  {item.longitud}
+                </td>
+                <td style={{ textAlign: "center", color: "black" }}>
+                  {item.descripcion}
+                </td>
+                <td style={{ textAlign: "center", color: "black" }}>
+                  <button
+                    onClick={() => navigate(`/proyectos/${item.idinmobilaria}`)}
+                    className={style.addBtn}
+                  >
+                    👁️ Ver
+                  </button>
                 </td>
                 <td style={{ textAlign: "center" }}>
-                  <button onClick={() => handleEdit(item.idinmobilaria)} className={style.addBtn}>✏️</button>{' '}
-                  <button onClick={() => handleDelete(item.idinmobilaria)} className={style.removeBtn}>🗑️</button>
+                  <button
+                    onClick={() => handleEdit(item.idinmobilaria)}
+                    className={style.addBtn}
+                  >
+                    ✏️
+                  </button>{" "}
+                  <button
+                    onClick={() => handleDelete(item.idinmobilaria)}
+                    className={style.removeBtn}
+                  >
+                    🗑️
+                  </button>
                 </td>
               </tr>
             ))}

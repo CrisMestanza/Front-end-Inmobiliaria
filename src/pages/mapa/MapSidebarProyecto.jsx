@@ -6,13 +6,11 @@ import {
   FaMapMarkedAlt,
   FaHome,
 } from "react-icons/fa";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import styles from "./Mapa.module.css";
-import ModalCuota from "../inmobiliaria/lote/modalCuota";
 
-const MapSidebar = ({
+const ProyectoSidebar = ({
   inmo,
-  lote,
+  proyecto,
   imagenes,
   onClose,
   walkingInfo,
@@ -22,15 +20,14 @@ const MapSidebar = ({
   const [fullscreenImgIndex, setFullscreenImgIndex] = useState(null);
   const [showSidebarMobile, setShowSidebarMobile] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  if (!inmo || !lote) return null;
+  if (!proyecto) return null;
 
   const visibleImages = showAll ? imagenes : imagenes.slice(0, 3);
 
   return (
     <>
-      {/* Botón móvil para mostrar más información */}
+      {/* Botón móvil */}
       <button
         className={styles.showInfoBtn}
         onClick={() => setShowSidebarMobile(true)}
@@ -43,7 +40,7 @@ const MapSidebar = ({
           showSidebarMobile ? styles.sidebarMobileOpen : ">"
         } ${collapsed ? styles.sidebarCollapsed : "<"}`}
       >
-        {/* Botón flecha para ocultar/mostrar */}
+        {/* Botón flecha */}
         <button
           className={styles.toggleArrow}
           onClick={() => setCollapsed(!collapsed)}
@@ -51,7 +48,7 @@ const MapSidebar = ({
           {collapsed ? "<" : ">"}
         </button>
 
-        {/* Botón para cerrar todo el sidebar */}
+        {/* Botón cerrar */}
         <button
           onClick={() => {
             onClose();
@@ -62,11 +59,11 @@ const MapSidebar = ({
           X
         </button>
 
-        {/* Contenido colapsable */}
         {!collapsed && (
           <>
             <h2>{inmo.nombreinmobiliaria}</h2>
             <p className={styles.descripcion}>{inmo.descripcion}</p>
+
             <div className={styles.links}>
               <a
                 href={inmo.facebook}
@@ -78,13 +75,7 @@ const MapSidebar = ({
               </a>
               <a
                 href={`https://wa.me/${inmo.whatsapp}?text=${encodeURIComponent(
-                  `¡Hola! Me interesa ${
-                    lote.idtipoinmobiliaria === 1
-                      ? "el *lote/terreno*"
-                      : "la *casa*"
-                  } "${
-                    lote.nombre
-                  }".\nVengo de la página *Habita* y me gustaría recibir más información.`
+                  `¡Hola! Me interesa el *proyecto* "${proyecto.nombreproyecto}".\nVengo de la página *Habita* y me gustaría recibir más información.`
                 )}`}
                 target="_blank"
                 rel="noreferrer"
@@ -102,9 +93,12 @@ const MapSidebar = ({
               </a>
             </div>
 
-            <h3 style={{ color: "black", padding: "0px" }}>{lote.nombre}</h3>
+            <h3 style={{ color: "black", padding: "0px" }}>
+              {proyecto.nombreproyecto}
+            </h3>
 
-            <p className={styles.descripcion}>{lote.descripcion}</p>
+            <p className={styles.descripcion}>{proyecto.descripcion}</p>
+
             <h3 style={{ color: "black" }}>Distancia:</h3>
             <div className={styles.distancia}>
               <p>
@@ -129,30 +123,11 @@ const MapSidebar = ({
                 )}
               </p>
             </div>
+
             <p className={styles.tipo}>
-              {inmo.idtipoinmobiliaria === 1 && (
-                <>
-                  <FaMapMarkedAlt size={20} color="#2c3e50" />{" "}
-                  <span>Lote / Terreno</span>
-                </>
-              )}
-              {inmo.idtipoinmobiliaria === 2 && (
-                <>
-                  <FaHome size={20} color="#2c3e50" /> <span>Casa</span>
-                </>
-              )}
+              <FaMapMarkedAlt size={20} color="#2c3e50" />{" "}
+              <span>Proyecto inmobiliario</span>
             </p>
-
-            <h2 className={styles.descripcion}>Precio al Contado:</h2>
-            <h2 className={styles.descripcion}>S/.{lote.precio}</h2>
-            <h3>¿Quieres cotizar un crédito?</h3>
-            <button onClick={() => setIsModalOpen(true)}>Cotizar</button>
-
-            <ModalCuota
-              isOpen={isModalOpen}
-              onClose={() => setIsModalOpen(false)}
-              lote={lote}
-            />
 
             {imagenes.length > 0 && (
               <div className={styles.imagenesContainer}>
@@ -162,7 +137,7 @@ const MapSidebar = ({
                     <img
                       key={img.idimagenes}
                       src={`http://127.0.0.1:8000${img.imagen}`}
-                      alt="Inmobiliaria"
+                      alt="Proyecto"
                       className={styles.thumbnail}
                       onClick={() =>
                         setFullscreenImgIndex(imagenes.indexOf(img))
@@ -185,7 +160,7 @@ const MapSidebar = ({
 
         {fullscreenImgIndex !== null && (
           <div className={styles.fullscreenOverlay}>
-            {/* Botón ANTERIOR */}
+            {/* ANTERIOR */}
             <button
               className={`${styles.navButton} ${styles.prevButton}`}
               onClick={(e) => {
@@ -204,7 +179,7 @@ const MapSidebar = ({
               className={styles.fullscreenImg}
             />
 
-            {/* Botón SIGUIENTE */}
+            {/* SIGUIENTE */}
             <button
               className={`${styles.navButton} ${styles.nextButton}`}
               onClick={(e) => {
@@ -216,7 +191,7 @@ const MapSidebar = ({
               &gt;
             </button>
 
-            {/* Botón para cerrar */}
+            {/* Cerrar */}
             <button
               className={styles.closeFullscreen}
               onClick={() => setFullscreenImgIndex(null)}
@@ -230,4 +205,4 @@ const MapSidebar = ({
   );
 };
 
-export default MapSidebar;
+export default ProyectoSidebar;
