@@ -136,7 +136,7 @@ const ProyectoSidebar = ({
                   {visibleImages.map((img) => (
                     <img
                       key={img.idimagenes}
-                      src={`http://127.0.0.1:8000${img.imagen}`}
+                      src={`https://apiinmo.y0urs.com${img.imagen}`}
                       alt="Proyecto"
                       className={styles.thumbnail}
                       onClick={() =>
@@ -174,7 +174,7 @@ const ProyectoSidebar = ({
             </button>
 
             <img
-              src={`http://127.0.0.1:8000${imagenes[fullscreenImgIndex].imagen}`}
+              src={`https://apiinmo.y0urs.com${imagenes[fullscreenImgIndex].imagen}`}
               alt="Pantalla completa"
               className={styles.fullscreenImg}
             />

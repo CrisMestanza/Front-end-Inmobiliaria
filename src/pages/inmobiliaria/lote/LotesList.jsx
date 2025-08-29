@@ -14,7 +14,7 @@ export default function LotesList() {
     const fetchLotes = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:8000/api/getLoteProyecto/${idproyecto}`
+          `https://apiinmo.y0urs.com/api/getLoteProyecto/${idproyecto}`
         );
         const data = await res.json();
         setLotes(data);
@@ -176,7 +176,7 @@ export default function LotesList() {
                         )
                       ) {
                         await fetch(
-                          `http://127.0.0.1:8000/api/deleteLote/${lote.idlote}/`,
+                          `https://apiinmo.y0urs.com/api/deleteLote/${lote.idlote}/`,
                           {
                             method: "PUT",
                           }

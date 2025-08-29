@@ -15,7 +15,9 @@ export default function Principal() {
   useEffect(() => {
     const fetchInmobiliarias = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/listInmobiliaria/");
+        const res = await fetch(
+          "https://apiinmo.y0urs.com/api/listInmobiliaria/"
+        );
         const data = await res.json();
         setInmobiliarias(data);
       } catch (err) {
@@ -37,7 +39,7 @@ export default function Principal() {
     if (confirm) {
       try {
         const res = await fetch(
-          `http://127.0.0.1:8000/api/deleteInmobiliaria/${idinmobilaria}/`,
+          `https://apiinmo.y0urs.com/api/deleteInmobiliaria/${idinmobilaria}/`,
           {
             method: "PUT",
           }

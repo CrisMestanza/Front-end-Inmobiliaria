@@ -72,7 +72,7 @@ function MyMap() {
 
     // 1. Obtener los lotes del proyecto
     fetch(
-      `http://127.0.0.1:8000/api/getLoteProyecto/${selectedProyecto.idproyecto}`
+      `https://apiinmo.y0urs.com/api/getLoteProyecto/${selectedProyecto.idproyecto}`
     )
       .then((res) => res.json())
       .then(async (lotes) => {
@@ -80,7 +80,7 @@ function MyMap() {
         const lotesConPuntos = await Promise.all(
           lotes.map(async (lote) => {
             const resPuntos = await fetch(
-              `http://127.0.0.1:8000/api/listPuntos/${lote.idlote}`
+              `https://apiinmo.y0urs.com/api/listPuntos/${lote.idlote}`
             );
             const puntos = await resPuntos.json();
             return { ...lote, puntos };
@@ -94,7 +94,7 @@ function MyMap() {
 
   // Tipos de inmobiliaria
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/listTipoInmobiliaria/")
+    fetch("https://apiinmo.y0urs.com/api/listTipoInmobiliaria/")
       .then((res) => res.json())
       .then(setTiposInmo)
       .catch(console.error);
@@ -103,17 +103,17 @@ function MyMap() {
   // Filtro combinado
   useEffect(() => {
     if (selectedRango) {
-      fetch(`http://127.0.0.1:8000/api/rangoPrecio/${selectedRango}`)
+      fetch(`https://apiinmo.y0urs.com/api/rangoPrecio/${selectedRango}`)
         .then((res) => res.json())
         .then(setProyecto)
         .catch(console.error);
     } else if (selectedTipo) {
-      fetch(`http://127.0.0.1:8000/api/lote/${selectedTipo}`)
+      fetch(`https://apiinmo.y0urs.com/api/lote/${selectedTipo}`)
         .then((res) => res.json())
         .then(setProyecto)
         .catch(console.error);
     } else {
-      fetch("http://127.0.0.1:8000/api/listProyectos/")
+      fetch("https://apiinmo.y0urs.com/api/listProyectos/")
         .then((res) => res.json())
         .then(setProyecto)
         .catch(console.error);
@@ -156,14 +156,14 @@ function MyMap() {
   const handleLoteClick = async (lote) => {
     // Obtener info del lote
     const resLote = await fetch(
-      `http://127.0.0.1:8000/api/getLoteProyecto/${lote.idproyecto}`
+      `https://apiinmo.y0urs.com/api/getLoteProyecto/${lote.idproyecto}`
     );
     const lotes = await resLote.json();
     const loteCompleto = lotes.find((l) => l.idlote === lote.idlote);
 
     // Obtener puntos del lote
     const resPuntos = await fetch(
-      `http://127.0.0.1:8000/api/listPuntos/${lote.idlote}`
+      `https://apiinmo.y0urs.com/api/listPuntos/${lote.idlote}`
     );
     const puntos = await resPuntos.json();
 
@@ -193,7 +193,7 @@ function MyMap() {
 
       // 🔹 Traer puntos del proyecto
       const resPuntos = await fetch(
-        `http://127.0.0.1:8000/api/listPuntosProyecto/${proyecto.idproyecto}`
+        `https://apiinmo.y0urs.com/api/listPuntosProyecto/${proyecto.idproyecto}`
       );
       const dataPuntos = await resPuntos.json();
       setPuntos(dataPuntos);
@@ -210,14 +210,14 @@ function MyMap() {
 
       // 🔹 Traer lotes
       const resLotes = await fetch(
-        `http://127.0.0.1:8000/api/getLoteProyecto/${proyecto.idproyecto}`
+        `https://apiinmo.y0urs.com/api/getLoteProyecto/${proyecto.idproyecto}`
       );
       const dataLotes = await resLotes.json();
       setLotesProyecto(dataLotes);
 
       // 🔹 Traer inmobiliaria
       const resInmo = await fetch(
-        `http://127.0.0.1:8000/api/getImobiliaria/${proyecto.idinmobilaria}`
+        `https://apiinmo.y0urs.com/api/getImobiliaria/${proyecto.idinmobilaria}`
       );
       const inmoData = await resInmo.json();
 

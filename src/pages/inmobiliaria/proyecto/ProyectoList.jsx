@@ -14,7 +14,7 @@ export default function ProyectosList() {
     const fetchProyectos = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:8000/api/getProyectoInmo/${idinmobilaria}`
+          `https://apiinmo.y0urs.com/api/getProyectoInmo/${idinmobilaria}`
         );
         const data = await res.json();
         setProyectos(data);
@@ -175,7 +175,7 @@ export default function ProyectosList() {
                         )
                       ) {
                         await fetch(
-                          `http://127.0.0.1:8000/api/deleteProyecto/${proyecto.idproyecto}/`,
+                          `https://apiinmo.y0urs.com/api/deleteProyecto/${proyecto.idproyecto}/`,
                           {
                             method: "PUT",
                           }

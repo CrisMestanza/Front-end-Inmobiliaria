@@ -91,13 +91,16 @@ export default function ProyectoModal({ onClose, idinmobilaria }) {
     console.log("Payload que envío:", payload);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/registerProyecto/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+        "https://apiinmo.y0urs.com/api/registerProyecto/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (res.ok) {
         alert("✅ Proyecto registrado con éxito");
