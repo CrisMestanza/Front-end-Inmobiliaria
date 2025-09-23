@@ -11,69 +11,83 @@ const UserDetails = ({ onNext, onBack, formData }) => {
   });
   const [errors, setErrors] = useState({});
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const isFormValid =
     data.nombre &&
     data.correo &&
     data.contrasena &&
     data.confirmarContrasena &&
-    data.contrasena === data.confirmarContrasena;
+    data.contrasena === data.confirmarContrasena &&
+    Object.keys(errors).every((key) => !errors[key]);
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!data.nombre) {
-      newErrors.nombre = "El nombre es requerido";
-    }
-
-    if (!data.correo) {
-      newErrors.correo = "El correo es requerido";
-    } else if (!validateEmail(data.correo)) {
-      newErrors.correo = "El formato del correo no es válido";
-    }
-
-    if (!data.contrasena) {
-      newErrors.contrasena = "La contraseña es requerida";
-    } else if (data.contrasena.length < 6) {
-      newErrors.contrasena = "La contraseña debe tener al menos 6 caracteres";
-    }
-
-    if (!data.confirmarContrasena) {
-      newErrors.confirmarContrasena = "Debe confirmar la contraseña";
-    } else if (data.contrasena !== data.confirmarContrasena) {
-      newErrors.confirmarContrasena = "Las contraseñas no coinciden";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const checkPasswordValidity = (password) => {
+    if (!password) return "";
+    if (password.length < 8) return "Debe tener al menos 8 caracteres";
+    if (!/(?=.*[A-Z])/.test(password))
+      return "Debe incluir al menos una mayúscula";
+    if (!/(?=.*[0-9])/.test(password)) return "Debe incluir al menos un número";
+    if (!/(?=.*[!@#$%^&*()_+=[\]{};':"\\|,.<>/?])/.test(password))
+      return "Debe incluir un carácter especial";
+    return "";
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setData({ ...data, [name]: value });
+    const newData = { ...data, [name]: value };
+    setData(newData);
 
-    // Limpiar error del campo cuando el usuario empiece a escribir
-    if (errors[name]) {
-      setErrors({ ...errors, [name]: "" });
+    const newErrors = { ...errors };
+
+    if (name === "nombre") {
+      newErrors.nombre = value ? "" : "El nombre es requerido";
     }
+
+    if (name === "correo") {
+      if (!value) newErrors.correo = "El correo es requerido";
+      else if (!validateEmail(value))
+        newErrors.correo = "El formato del correo no es válido";
+      else newErrors.correo = "";
+    }
+
+    if (name === "contrasena") {
+      newErrors.contrasena = checkPasswordValidity(value);
+      if (
+        newData.confirmarContrasena &&
+        value !== newData.confirmarContrasena
+      ) {
+        newErrors.confirmarContrasena = "Las contraseñas no coinciden";
+      } else {
+        newErrors.confirmarContrasena = "";
+      }
+    }
+
+    if (name === "confirmarContrasena") {
+      if (!value)
+        newErrors.confirmarContrasena = "Debe confirmar la contraseña";
+      else if (newData.contrasena !== value)
+        newErrors.confirmarContrasena = "Las contraseñas no coinciden";
+      else newErrors.confirmarContrasena = "";
+    }
+
+    setErrors(newErrors);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (validateForm() && isFormValid) {
-      // Preparar datos para enviar al backend (estado = 1 automáticamente)
+    if (isFormValid) {
       const userData = {
         nombre: data.nombre,
         correo: data.correo,
         contrasena: data.contrasena,
-        estado: 1, // Se envía automáticamente como 1
+        estado: 1,
       };
-
       onNext(userData);
     }
   };
@@ -114,14 +128,22 @@ const UserDetails = ({ onNext, onBack, formData }) => {
 
       <div className="form-row">
         <label htmlFor="contrasena">Contraseña</label>
-        <input
-          type="password"
-          name="contrasena"
-          value={data.contrasena}
-          onChange={handleChange}
-          required
-          className={errors.contrasena ? "error" : ""}
-        />
+        <div className="password-input-wrapper">
+          <input
+            type={showPassword ? "text" : "password"}
+            name="contrasena"
+            value={data.contrasena}
+            onChange={handleChange}
+            required
+            className={errors.contrasena ? "error" : ""}
+          />
+          <span
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? "👁️" : "🙈"}
+          </span>
+        </div>
         {errors.contrasena && (
           <span className="error-message">{errors.contrasena}</span>
         )}
@@ -129,14 +151,22 @@ const UserDetails = ({ onNext, onBack, formData }) => {
 
       <div className="form-row">
         <label htmlFor="confirmarContrasena">Confirmar Contraseña</label>
-        <input
-          type="password"
-          name="confirmarContrasena"
-          value={data.confirmarContrasena}
-          onChange={handleChange}
-          required
-          className={errors.confirmarContrasena ? "error" : ""}
-        />
+        <div className="password-input-wrapper">
+          <input
+            type={showConfirmPassword ? "text" : "password"}
+            name="confirmarContrasena"
+            value={data.confirmarContrasena}
+            onChange={handleChange}
+            required
+            className={errors.confirmarContrasena ? "error" : ""}
+          />
+          <span
+            className="toggle-password"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            {showConfirmPassword ? "👁️" : "🙈"}
+          </span>
+        </div>
         {errors.confirmarContrasena && (
           <span className="error-message">{errors.confirmarContrasena}</span>
         )}

@@ -21,18 +21,9 @@ const Summary = ({ onBack, formData }) => {
         </p>
       </div>
       <div className="summary-section">
-        <h4>Datos de la Inmobiliaria</h4>
-        <p>
-          <strong>Tipo de Persona:</strong>{" "}
-          {formData.personType === "natural"
-            ? "Persona Natural"
-            : "Persona Jurídica"}
-        </p>
+        <h4>Información de Contacto</h4>
         <p>
           <strong>Razón Social:</strong> {formData.companyName}
-        </p>
-        <p>
-          <strong>RUC:</strong> {formData.ruc}
         </p>
         <p>
           <strong>Teléfono:</strong> {formData.phoneNumber}
@@ -42,30 +33,28 @@ const Summary = ({ onBack, formData }) => {
         </p>
       </div>
       <div className="summary-section">
-        <h4>Información Legal</h4>
+        <h4>Información Adicional</h4>
         <p>
-          <strong>Partida Registral (SUNARP):</strong>{" "}
-          {formData.sunarpRegistration}
+          <strong>Descripción:</strong> {formData.descripcion}
         </p>
         <p>
-          <strong>N° de Agente Inmobiliario (MVCS):</strong>{" "}
-          {formData.mvcsAgentNumber}
+          <strong>Enlace a Sitio Web:</strong>{" "}
+          {formData.portfolioLink || "No proporcionado"}
         </p>
       </div>
       <div className="summary-section">
-        <h4>Descripción y Ubicación</h4>
+        <h4>Redes Sociales</h4>
         <p>
-          <strong>Descripción:</strong> {formData.companyDescription}
+          <strong>Facebook:</strong>{" "}
+          {formData.facebookLink || "No proporcionado"}
         </p>
         <p>
-          <strong>Enlace al Portafolio:</strong>{" "}
-          {formData.portfolioLink || "No proporcionado"}
+          <strong>Whatsapp:</strong>{" "}
+          {formData.whatsappNumber || "No proporcionado"}
         </p>
         <p>
-          <strong>Dirección Fiscal:</strong> {formData.fiscalAddress}
-        </p>
-        <p>
-          <strong>Dirección de Oficina:</strong> {formData.officeAddress}
+          <strong>Tiktok:</strong>{" "}
+          {formData.tiktokUsername || "No proporcionado"}
         </p>
       </div>
       <div className="form-actions">
@@ -73,7 +62,7 @@ const Summary = ({ onBack, formData }) => {
           Editar
         </button>
         <button type="submit" className="submit-btn" onClick={handleSubmit}>
-          Confirmar y Enviar
+          Registrarme
         </button>
       </div>
     </div>

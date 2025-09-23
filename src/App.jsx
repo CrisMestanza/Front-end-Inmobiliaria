@@ -14,7 +14,7 @@ function App() {
       <Routes>
         <Route path="/agregar" element={<InmobiliariaForm />} />
         <Route path="/lotes/:idproyecto" element={<LotesList />} />
-        <Route path="/proyectos/:idinmobilaria" element={<ProyectoList />} />
+        <Route path="/proyectos/:idinmobiliaria" element={<ProyectoList />} />
         <Route path="/login" element={<LoginLayout />} />
         <Route path="/register" element={<Register />} />
         <Route

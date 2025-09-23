@@ -5,7 +5,7 @@ import style from "./agregarInmo.module.css";
 export default function InmobiliariaEdit({
   onClose,
   onUpdated,
-  idinmobilaria,
+  idinmobiliaria,
 }) {
   const [nombreinmobiliaria, setNombreinmobiliaria] = useState("");
   const [facebook, setFacebook] = useState("");
@@ -20,7 +20,7 @@ export default function InmobiliariaEdit({
     const fetchInmobiliaria = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:8000/api/getImobiliaria/${idinmobilaria}`
+          `http://127.0.0.1:8000/api/getImobiliaria/${idinmobiliaria}`
         );
         const data = await res.json();
         if (data.length > 0) {
@@ -38,14 +38,14 @@ export default function InmobiliariaEdit({
       }
     };
     fetchInmobiliaria();
-  }, [idinmobilaria]);
+  }, [idinmobiliaria]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const res = await axios.put(
-        `http://127.0.0.1:8000/api/updateInmobiliaria/${idinmobilaria}/`,
+        `http://127.0.0.1:8000/api/updateInmobiliaria/${idinmobiliaria}/`,
         {
           nombreinmobiliaria,
           facebook,

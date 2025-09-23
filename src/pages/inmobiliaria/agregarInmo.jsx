@@ -9,7 +9,7 @@ export default function Principal() {
   const [showModal, setShowModal] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [inmobiliarias, setInmobiliarias] = useState([]);
-  const [idinmobilariaEdit, setIdinmobilariaEdit] = useState(null);
+  const [idinmobiliariaEdit, setIdinmobiliariaEdit] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,19 +25,19 @@ export default function Principal() {
     fetchInmobiliarias();
   }, []);
 
-  const handleEdit = (idinmobilaria) => {
-    setIdinmobilariaEdit(idinmobilaria);
+  const handleEdit = (idinmobiliaria) => {
+    setIdinmobiliariaEdit(idinmobiliaria);
     setShowModalEdit(true);
   };
 
-  const handleDelete = async (idinmobilaria) => {
+  const handleDelete = async (idinmobiliaria) => {
     const confirm = window.confirm(
       "¿Estás seguro de eliminar esta inmobiliaria?"
     );
     if (confirm) {
       try {
         const res = await fetch(
-          `http://127.0.0.1:8000/api/deleteInmobiliaria/${idinmobilaria}/`,
+          `http://127.0.0.1:8000/api/deleteInmobiliaria/${idinmobiliaria}/`,
           {
             method: "PUT",
           }
@@ -45,7 +45,9 @@ export default function Principal() {
         if (res.ok) {
           alert("Eliminado correctamente ✅");
           setInmobiliarias(
-            inmobiliarias.filter((item) => item.idinmobilaria !== idinmobilaria)
+            inmobiliarias.filter(
+              (item) => item.idinmobiliaria !== idinmobiliaria
+            )
           );
         } else {
           alert("Error al eliminar ❌");
@@ -64,7 +66,7 @@ export default function Principal() {
   const handleInmobiliariaUpdated = (actualizada) => {
     setInmobiliarias((prev) =>
       prev.map((item) =>
-        item.idinmobilaria === actualizada.idinmobilaria ? actualizada : item
+        item.idinmobiliaria === actualizada.idinmobiliaria ? actualizada : item
       )
     );
   };
@@ -111,7 +113,7 @@ export default function Principal() {
           <tbody>
             {inmobiliarias.map((item, index) => (
               <tr
-                key={item.idinmobilaria}
+                key={item.idinmobiliaria}
                 style={{ borderBottom: "1px solid #ccc" }}
               >
                 <td style={{ textAlign: "center", color: "black" }}>
@@ -154,7 +156,9 @@ export default function Principal() {
                 </td>
                 <td style={{ textAlign: "center", color: "black" }}>
                   <button
-                    onClick={() => navigate(`/proyectos/${item.idinmobilaria}`)}
+                    onClick={() =>
+                      navigate(`/proyectos/${item.idinmobiliaria}`)
+                    }
                     className={style.addBtn}
                   >
                     👁️ Ver
@@ -162,13 +166,13 @@ export default function Principal() {
                 </td>
                 <td style={{ textAlign: "center" }}>
                   <button
-                    onClick={() => handleEdit(item.idinmobilaria)}
+                    onClick={() => handleEdit(item.idinmobiliaria)}
                     className={style.addBtn}
                   >
                     ✏️
                   </button>{" "}
                   <button
-                    onClick={() => handleDelete(item.idinmobilaria)}
+                    onClick={() => handleDelete(item.idinmobiliaria)}
                     className={style.removeBtn}
                   >
                     🗑️
@@ -191,7 +195,7 @@ export default function Principal() {
         <InmobiliariaEdit
           onClose={() => setShowModalEdit(false)}
           onUpdated={handleInmobiliariaUpdated}
-          idinmobilaria={idinmobilariaEdit}
+          idinmobiliaria={idinmobiliariaEdit}
         />
       )}
     </div>

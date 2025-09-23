@@ -302,7 +302,7 @@ function MyMap() {
       setLotesProyecto(dataLotes);
 
       const resInmo = await fetch(
-        `http://127.0.0.1:8000/api/getImobiliaria/${proyecto.idinmobilaria}`
+        `http://127.0.0.1:8000/api/getInmobiliaria/${proyecto.idinmobiliaria}`
       );
       const inmoData = await resInmo.json();
 

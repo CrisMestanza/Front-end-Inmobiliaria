@@ -4,15 +4,15 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import "./Registro.css";
 import PersonalDetails from "./PersonalDetails";
-import LegalDetails from "./LegalDetails";
+import Social from "./Social";
 import CompanyDetails from "./CompanyDetails";
 import Summary from "./Summary";
 import Account from "./Account";
 
 const steps = [
-  "Datos de la Inmobiliaria",
-  "Información Legal",
-  "Descripción",
+  "Información de Contacto",
+  "Redes Sociales",
+  "Información Adicional",
   "Datos del Usuario",
   "Resumen",
 ];
@@ -27,7 +27,7 @@ const Register = () => {
     email: "",
     sunarpRegistration: "",
     mvcsAgentNumber: "",
-    companyDescription: "",
+    descripcion: "",
     portfolioLink: "",
     fiscalAddress: "",
     officeAddress: "",
@@ -46,7 +46,7 @@ const Register = () => {
         return <PersonalDetails onNext={handleNextStep} formData={formData} />;
       case 2:
         return (
-          <LegalDetails
+          <Social
             onNext={handleNextStep}
             onBack={handlePreviousStep}
             formData={formData}

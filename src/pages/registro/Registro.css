@@ -322,6 +322,83 @@ body {
 .outside-link-btn.right {
   margin-right: 0;
 }
+/* Grupo de WhatsApp: fila horizontal */
+.whatsapp-input-group {
+  display: flex;
+  align-items: center; /* centra verticalmente */
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Signo + fijo, ocupa su espacio */
+.whatsapp-input-group .plus-sign {
+  flex: 0 0 30px; /* ancho fijo */
+  text-align: center;
+  background-color: #f0f0f0;
+  font-weight: bold;
+  color: #555;
+  border-right: 1px solid #ccc;
+}
+
+/* Input de prefijo */
+.whatsapp-input-group .country-code {
+  flex: 0 0 60px; /* ancho fijo */
+  border: none;
+  outline: none;
+  text-align: center;
+  padding: 8px;
+  border-right: 1px solid #ccc;
+}
+
+/* Input de número */
+.whatsapp-input-group .phone-number {
+  flex: 1; /* ocupa el espacio restante */
+  border: none;
+  outline: none;
+  padding: 8px;
+}
+
+/* Enfocado */
+.whatsapp-input-group:focus-within {
+  border-color: #6bff5d;
+  box-shadow: 0 0 0 2px rgba(93, 93, 255, 0.2);
+}
+
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 40px; /* espacio para el ojito */
+}
+
+.password-input-wrapper .toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 16px;
+  color: #555;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+input[type="password"]::-webkit-contacts-auto-fill-button,
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-clear-button,
+input[type="password"]::-webkit-inner-spin-button,
+input[type="password"]::-webkit-password-toggle-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
 
 @media (max-width: 992px) {
   .form-wrapper {
