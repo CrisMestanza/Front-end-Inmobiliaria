@@ -24,7 +24,7 @@ export default function LoteModal({ onClose, idproyecto }) {
     try {
       // 🔹 Obtener puntos del proyecto
       const resProyecto = await fetch(
-        `https://apiinmo.y0urs.com/api/listPuntosProyecto/${idproyecto}`
+        `http://127.0.0.1:8000/api/listPuntosProyecto/${idproyecto}`
       );
       const puntosProyecto = await resProyecto.json();
 
@@ -56,13 +56,13 @@ export default function LoteModal({ onClose, idproyecto }) {
 
       // 🔹 Mostrar lotes existentes
       const resLotes = await fetch(
-        `https://apiinmo.y0urs.com/api/getLoteProyecto/${idproyecto}`
+        `http://127.0.0.1:8000/api/getLoteProyecto/${idproyecto}`
       );
       const lotes = await resLotes.json();
 
       for (const lote of lotes) {
         const resPuntos = await fetch(
-          `https://apiinmo.y0urs.com/api/listPuntos/${lote.idlote}`
+          `http://127.0.0.1:8000/api/listPuntos/${lote.idlote}`
         );
         const puntos = await resPuntos.json();
         if (!puntos.length) continue;
@@ -208,7 +208,7 @@ export default function LoteModal({ onClose, idproyecto }) {
     const fetchTipos = async () => {
       try {
         const res = await fetch(
-          "https://apiinmo.y0urs.com/api/listTipoInmobiliaria/"
+          "http://127.0.0.1:8000/api/listTipoInmobiliaria/"
         );
         const data = await res.json();
         setTipos(data);
@@ -283,7 +283,7 @@ export default function LoteModal({ onClose, idproyecto }) {
     });
 
     try {
-      const res = await fetch("https://apiinmo.y0urs.com/api/registerLote/", {
+      const res = await fetch("http://127.0.0.1:8000/api/registerLote/", {
         method: "POST",
         body: formData,
       });

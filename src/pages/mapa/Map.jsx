@@ -24,11 +24,87 @@ const RANGOS_PRECIO = [
   { label: "S/. 250,001 - más", value: "250001-mas" },
 ];
 
+const LotesOverlay = ({
+  lotes,
+  selectedLote,
+  hoveredLote,
+  onLoteClick,
+  onLoteMouseOver,
+  onLoteMouseOut,
+}) => {
+  const darkenColor = (hex, amount = 0.2) => {
+    let c = hex.replace("#", "");
+    if (c.length === 8) c = c.substring(0, 6);
+    let num = parseInt(c, 16);
+    let r = (num >> 16) & 0xff;
+    let g = (num >> 8) & 0xff;
+    let b = num & 0xff;
+    r = Math.max(0, Math.floor(r * (1 - amount)));
+    g = Math.max(0, Math.floor(g * (1 - amount)));
+    b = Math.max(0, Math.floor(b * (1 - amount)));
+    return `rgb(${r},${g},${b})`;
+  };
+
+  const getColorLote = (estado, hovered) => {
+    let baseColor;
+    switch (estado) {
+      case 0:
+        baseColor = "#00ff00";
+        break;
+      case 1:
+        baseColor = "#ff0000";
+        break;
+      case 2:
+        baseColor = "#ffff00";
+        break;
+      default:
+        baseColor = "#808080";
+    }
+    if (estado === 1 || estado === 2 || !hovered) {
+      return baseColor;
+    }
+    return darkenColor(baseColor, 0.3);
+  };
+
+  return (
+    <>
+      {lotes
+        .filter((lote) =>
+          selectedLote ? lote.idlote === selectedLote.lote.idlote : true
+        )
+        .map((lote) => {
+          const isLibre = lote.vendido === 0;
+
+          return (
+            <PolygonOverlay
+              key={lote.idlote}
+              puntos={lote.puntos}
+              color={getColorLote(lote.vendido, hoveredLote === lote.idlote)}
+              onClick={isLibre ? () => onLoteClick(lote) : undefined}
+              onMouseOver={
+                isLibre ? () => onLoteMouseOver(lote.idlote) : undefined
+              }
+              onMouseOut={isLibre ? onLoteMouseOut : undefined}
+              label={hoveredLote === lote.idlote ? lote.nombre : null}
+              options={{
+                zIndex: hoveredLote === lote.idlote ? 11 : 10,
+                clickable: isLibre,
+                draggable: false,
+                editable: false,
+                strokeWeight: 1,
+              }}
+            />
+          );
+        })}
+    </>
+  );
+};
+
 function MyMap() {
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
-    // googleMapsApiKey: "",
     googleMapsApiKey: "AIzaSyA0dsaDHTO3rx48cyq61wbhItaZ_sWcV94",
+    // googleMapsApiKey: "",
     libraries: ["places"],
   });
 
@@ -39,23 +115,23 @@ function MyMap() {
   const [proyecto, setProyecto] = useState([]);
   const [selectedProyecto, setselectedProyecto] = useState(null);
   const [lotesProyecto, setLotesProyecto] = useState([]);
-  // const [lotes, setLotes] = useState([]);
+  const [lotes, setLotes] = useState([]);
   const [selectedLote, setSelectedLote] = useState(null);
   const [routeMode, setRouteMode] = useState(null);
   const [directions, setDirections] = useState(null);
-  const [imagenes, setImagenes] = useState([]);
+  const [imagenesProyecto, setImagenesProyecto] = useState([]);
+  const [imagenesLote, setImagenesLote] = useState([]);
   const [puntos, setPuntos] = useState([]);
   const [showFilters, setShowFilters] = useState(true);
   const [hoveredLote, setHoveredLote] = useState(null);
+  const [iconosProyecto, setIconosProyecto] = useState([]);
 
-  // ⚡ FIX: Add the missing state variables here ⚡
   const [walkingInfo, setWalkingInfo] = useState(null);
   const [drivingInfo, setDrivingInfo] = useState(null);
 
   const mapRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Geolocalización
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
       (pos) =>
@@ -68,19 +144,41 @@ function MyMap() {
   }, []);
 
   useEffect(() => {
+    if (selectedLote) {
+      fetch(`http://127.0.0.1:8000/api/list_imagen/${selectedLote.lote.idlote}`)
+        .then((res) => res.json())
+        .then((data) => setImagenesLote(data))
+        .catch((err) => console.error("Error cargando imágenes:", err));
+    } else {
+      setImagenesLote([]);
+    }
+  }, [selectedLote]);
+
+  useEffect(() => {
+    if (selectedProyecto?.idproyecto) {
+      fetch(
+        `http://127.0.0.1:8000/api/list_imagen_proyecto/${selectedProyecto.idproyecto}`
+      )
+        .then((res) => res.json())
+        .then((data) => setImagenesProyecto(data))
+        .catch((err) => console.error("Error cargando imágenes:", err));
+    } else {
+      setImagenesProyecto([]);
+    }
+  }, [selectedProyecto]);
+
+  useEffect(() => {
     if (!selectedProyecto) return;
 
-    // 1. Obtener los lotes del proyecto
     fetch(
-      `https://apiinmo.y0urs.com/api/getLoteProyecto/${selectedProyecto.idproyecto}`
+      `http://127.0.0.1:8000/api/getLoteProyecto/${selectedProyecto.idproyecto}`
     )
       .then((res) => res.json())
       .then(async (lotes) => {
-        // 2. Para cada lote, obtener sus puntos
         const lotesConPuntos = await Promise.all(
           lotes.map(async (lote) => {
             const resPuntos = await fetch(
-              `https://apiinmo.y0urs.com/api/listPuntos/${lote.idlote}`
+              `http://127.0.0.1:8000/api/listPuntos/${lote.idlote}`
             );
             const puntos = await resPuntos.json();
             return { ...lote, puntos };
@@ -92,41 +190,31 @@ function MyMap() {
       .catch(console.error);
   }, [selectedProyecto]);
 
-  // Tipos de inmobiliaria
   useEffect(() => {
-    fetch("https://apiinmo.y0urs.com/api/listTipoInmobiliaria/")
+    fetch("http://127.0.0.1:8000/api/listTipoInmobiliaria/")
       .then((res) => res.json())
       .then(setTiposInmo)
       .catch(console.error);
   }, []);
 
-  // Filtro combinado
   useEffect(() => {
     if (selectedRango) {
-      fetch(`https://apiinmo.y0urs.com/api/rangoPrecio/${selectedRango}`)
+      fetch(`http://127.0.0.1:8000/api/rangoPrecio/${selectedRango}`)
         .then((res) => res.json())
         .then(setProyecto)
         .catch(console.error);
     } else if (selectedTipo) {
-      fetch(`https://apiinmo.y0urs.com/api/lote/${selectedTipo}`)
+      fetch(`http://127.0.0.1:8000/api/lote/${selectedTipo}`)
         .then((res) => res.json())
         .then(setProyecto)
         .catch(console.error);
     } else {
-      fetch("https://apiinmo.y0urs.com/api/listProyectos/")
+      fetch("http://127.0.0.1:8000/api/listProyectos/")
         .then((res) => res.json())
         .then(setProyecto)
         .catch(console.error);
     }
   }, [selectedTipo, selectedRango]);
-
-  const handleTipoChange = (tipoId) => {
-    setSelectedTipo((prev) => (prev === tipoId ? "" : tipoId));
-  };
-
-  const handleRangoChange = (rangoValue) => {
-    setSelectedRango((prev) => (prev === rangoValue ? "" : rangoValue));
-  };
 
   const calculateInfo = (mode, proyecto) => {
     const service = new window.google.maps.DirectionsService();
@@ -154,16 +242,14 @@ function MyMap() {
   };
 
   const handleLoteClick = async (lote) => {
-    // Obtener info del lote
     const resLote = await fetch(
-      `https://apiinmo.y0urs.com/api/getLoteProyecto/${lote.idproyecto}`
+      `http://127.0.0.1:8000/api/getLoteProyecto/${lote.idproyecto}`
     );
     const lotes = await resLote.json();
     const loteCompleto = lotes.find((l) => l.idlote === lote.idlote);
 
-    // Obtener puntos del lote
     const resPuntos = await fetch(
-      `https://apiinmo.y0urs.com/api/listPuntos/${lote.idlote}`
+      `http://127.0.0.1:8000/api/listPuntos/${lote.idlote}`
     );
     const puntos = await resPuntos.json();
 
@@ -172,12 +258,11 @@ function MyMap() {
         lat: parseFloat(lote.latitud),
         lng: parseFloat(lote.longitud),
       });
-      mapRef.current.setZoom(22); // acercar al lote
+      mapRef.current.setZoom(22);
     }
-    // Aquí creamos el objeto para Sidebar
     setSelectedLote({
       lote: { ...loteCompleto, puntos },
-      inmo: loteCompleto.tipoinmobiliaria,
+      inmo: selectedProyecto?.inmo ?? null,
     });
   };
 
@@ -187,13 +272,15 @@ function MyMap() {
       setDirections(null);
       setWalkingInfo(null);
       setDrivingInfo(null);
+      setLotesProyecto([]);
+      setPuntos([]);
+      setIconosProyecto([]);
 
       calculateInfo("WALKING", proyecto);
       calculateInfo("DRIVING", proyecto);
 
-      // 🔹 Traer puntos del proyecto
       const resPuntos = await fetch(
-        `https://apiinmo.y0urs.com/api/listPuntosProyecto/${proyecto.idproyecto}`
+        `http://127.0.0.1:8000/api/listPuntosProyecto/${proyecto.idproyecto}`
       );
       const dataPuntos = await resPuntos.json();
       setPuntos(dataPuntos);
@@ -208,20 +295,24 @@ function MyMap() {
         mapRef.current.fitBounds(bounds);
       }
 
-      // 🔹 Traer lotes
       const resLotes = await fetch(
-        `https://apiinmo.y0urs.com/api/getLoteProyecto/${proyecto.idproyecto}`
+        `http://127.0.0.1:8000/api/getLoteProyecto/${proyecto.idproyecto}`
       );
       const dataLotes = await resLotes.json();
       setLotesProyecto(dataLotes);
 
-      // 🔹 Traer inmobiliaria
       const resInmo = await fetch(
-        `https://apiinmo.y0urs.com/api/getImobiliaria/${proyecto.idinmobilaria}`
+        `http://127.0.0.1:8000/api/getImobiliaria/${proyecto.idinmobilaria}`
       );
       const inmoData = await resInmo.json();
 
-      // 🚀 Guardar TODO junto
+      //Traer íconos del proyecto
+      const resIconos = await fetch(
+        `http://127.0.0.1:8000/api/list_iconos_proyecto/${proyecto.idproyecto}`
+      );
+      const dataIconos = await resIconos.json();
+      setIconosProyecto(dataIconos);
+
       setselectedProyecto({
         ...proyecto,
         inmo: inmoData[0] ?? null,
@@ -278,42 +369,6 @@ function MyMap() {
   if (loadError) return <h2>Error: {JSON.stringify(loadError)}</h2>;
   if (!isLoaded) return <h2>Cargando mapa...</h2>;
 
-  // 🔹 Función para oscurecer un color HEX
-  const darkenColor = (hex, amount = 0.2) => {
-    let c = hex.replace("#", "");
-    if (c.length === 8) c = c.substring(0, 6); // quitar alpha si hay
-
-    let num = parseInt(c, 16);
-    let r = (num >> 16) & 0xff;
-    let g = (num >> 8) & 0xff;
-    let b = num & 0xff;
-
-    r = Math.max(0, Math.floor(r * (1 - amount)));
-    g = Math.max(0, Math.floor(g * (1 - amount)));
-    b = Math.max(0, Math.floor(b * (1 - amount)));
-
-    return `rgb(${r},${g},${b})`;
-  };
-
-  const getColorLote = (estado, hovered) => {
-    let baseColor;
-    switch (estado) {
-      case 0:
-        baseColor = "#00ff00";
-        break; // libre → verde
-      case 1:
-        baseColor = "#ff0000";
-        break; // vendido → rojo
-      case 2:
-        baseColor = "#ffff00";
-        break; // reservado → amarillo
-      default:
-        baseColor = "#808080"; // gris
-    }
-
-    return hovered ? darkenColor(baseColor, 0.3) : baseColor;
-  };
-
   return (
     <div className={styles.container}>
       <input
@@ -323,7 +378,7 @@ function MyMap() {
         className={styles.searchBox}
       />
 
-      {showFilters && (
+      {/* {showFilters && (
         <div className={styles.filterPanel}>
           <button
             className={styles.closeBtn}
@@ -366,7 +421,7 @@ function MyMap() {
             ))}
           </div>
         </div>
-      )}
+      )} */}
 
       {!showFilters && (
         <button className={styles.openBtn} onClick={() => setShowFilters(true)}>
@@ -387,57 +442,72 @@ function MyMap() {
           fullscreenControl: false,
         }}
       >
-        {/* 📍 marcador central si no hay puntos */}
         {puntos.length === 0 && <Marker position={currentPosition} />}
 
-        {/* 📍 proyectos (sin los que ya están seleccionados) */}
         {proyecto
           .filter(
-            (proyecto) =>
+            (p) =>
               !(
                 selectedProyecto &&
                 puntos.length > 0 &&
-                selectedProyecto.idproyecto === proyecto.idproyecto
+                selectedProyecto.idproyecto === p.idproyecto
               )
           )
-          .map((proyecto) => (
+          .map((p) => (
             <MapMarker
-              key={proyecto.idproyecto}
-              proyecto={proyecto}
+              key={p.idproyecto}
+              proyecto={p}
               onClick={handleMarkerClick}
             />
           ))}
 
-        {lotesProyecto
-          .filter((lote) =>
-            selectedLote ? lote.idlote === selectedLote.lote.idlote : true
-          )
-          .map((lote) => (
-            <PolygonOverlay
-              key={lote.idlote}
-              puntos={lote.puntos}
-              color={getColorLote(lote.vendido, hoveredLote === lote.idlote)}
-              onClick={() => handleLoteClick(lote)}
-              onMouseOver={() => setHoveredLote(lote.idlote)}
-              onMouseOut={() => setHoveredLote(null)}
-              label={hoveredLote === lote.idlote ? lote.nombre : null}
-            />
-          ))}
+        {iconosProyecto.map((ico) => (
+          <Marker
+            key={ico.idiconoproyecto}
+            position={{
+              lat: parseFloat(ico.latitud),
+              lng: parseFloat(ico.longitud),
+            }}
+            icon={{
+              url: `http://127.0.0.1:8000${ico.icono_detalle.imagen}`,
+              scaledSize: new window.google.maps.Size(40, 40),
+            }}
+            title={ico.icono_detalle.nombre}
+          />
+        ))}
 
-        {/* 🚙 direcciones */}
-        {directions && <DirectionsRenderer directions={directions} />}
-
-        {/* 🟦 polígono en edición (proyecto actual) */}
         {puntos.length > 0 && (
-          <PolygonOverlay puntos={puntos} color="#38e8ffff" showLados={false} />
+          <PolygonOverlay
+            puntos={puntos}
+            color="#106e2eff"
+            showLados={false}
+            // options={{ clickable: false, zIndex: selectedLote ? 0 : 1 }}
+            options={{
+              clickable: false,
+              fillColor: "transparent",
+              strokeWeight: 2,
+            }}
+          />
         )}
+
+        {lotesProyecto.length > 0 && (
+          <LotesOverlay
+            lotes={lotesProyecto}
+            selectedLote={selectedLote}
+            hoveredLote={hoveredLote}
+            onLoteClick={handleLoteClick}
+            onLoteMouseOver={setHoveredLote}
+            onLoteMouseOut={() => setHoveredLote(null)}
+          />
+        )}
+        {directions && <DirectionsRenderer directions={directions} />}
       </GoogleMap>
 
       {selectedProyecto && (
         <ProyectoSidebar
           inmo={selectedProyecto?.inmo}
           proyecto={selectedProyecto}
-          imagenes={imagenes}
+          imagenes={imagenesProyecto}
           walkingInfo={walkingInfo}
           drivingInfo={drivingInfo}
           onClose={() => {
@@ -446,9 +516,10 @@ function MyMap() {
             setWalkingInfo(null);
             setDrivingInfo(null);
             setRouteMode(null);
-            setImagenes([]);
+            setImagenesProyecto([]);
             setPuntos([]);
             setLotesProyecto([]);
+            setIconosProyecto([]);
           }}
         />
       )}
@@ -457,15 +528,40 @@ function MyMap() {
         <MapSidebar
           lote={selectedLote.lote}
           inmo={selectedLote.inmo}
-          imagenes={imagenes}
+          imagenes={imagenesLote}
           walkingInfo={walkingInfo}
           drivingInfo={drivingInfo}
           onClose={() => {
             setSelectedLote(null);
+            setImagenesLote([]);
             setLotesProyecto((prev) => [...prev]);
           }}
         />
       )}
+      <div className={styles.authButtonContainer}>
+        <button className={styles.authButton}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className={styles.authIcon}
+          >
+            <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4Z" />
+          </svg>
+        </button>
+        <div className={styles.authTooltip}>
+          <p>¿Quieres registrar un Proyecto o Lote?</p>
+          <div className={styles.authLinks}>
+            <a href="/login" className={styles.authLink}>
+              Inicia Sesión
+            </a>
+            <p>¿No tienes una cuenta?</p>
+            <a href="/register" className={styles.authLink}>
+              Regístrate
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -13,7 +13,7 @@
 }
 
 .sidebar {
-  position: absolute;
+  position: relative;
   top: 10px;
   right: 10px;
   width: 320px;
@@ -30,8 +30,9 @@
   align-items: center;
   /* Para que el scroll no se vea feo en navegadores modernos */
   scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #007acc #f1f1f1;
+  scrollbar-color: #00ccbb6b #f1f1f1;
   transition: all 0.3s ease;
+  position: absolute;
 }
 
 /* Estilo del scrollbar para Chrome, Edge, Safari */
@@ -53,10 +54,12 @@
   background: #005f99; /* color más oscuro al pasar el mouse */
 }
 .sidebarCollapsed {
-  top: 66px;
-  width: 70px;
-  padding-left: 0;
-  padding-right: 0;
+  top: 10dvh;
+  width: 15dvh;
+  height: auto;
+  max-height: none;
+  overflow-y: hidden;
+  padding-bottom: 0;
 }
 
 /* .sidebar h2 {
@@ -66,20 +69,22 @@
 } */
 
 .sidebar h2 {
-  /* background: linear-gradient(90deg, #0077ff, #00b4d8); */
   color: rgb(0, 0, 0);
-  /* padding: 12px; */
-  font-size: 20px;
-  border-radius: 12px;
+  /* padding-top: 3dvh; */
+  font-size: 3dvh;
+  /* border-radius: 12px; */
   text-align: center;
   /* margin-bottom: 16px; */
+  font-weight: bold;
 }
 
 .sidebar h3 {
   margin: 0 0 10px;
-  font-size: 1 rem;
+  padding-top: 1dvh;
+  font-size: 3dvh;
   color: #333;
   text-align: center;
+  font-weight: bold;
 }
 
 .sidebar button {
@@ -89,11 +94,12 @@
 }
 
 .tipo {
-  display: flex;
+  /* display: flex; */
   align-items: center;
-  gap: 8px;
-  margin: 0 0 15px;
+  /* gap: 8px; */
+  /* margin: 0 0 15px; */
   color: #555;
+  /* padding-top: 2dvh; */
 }
 
 .links {
@@ -131,15 +137,14 @@
 
 .closeBtn {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 15px;
+  right: 15px;
   background: #ff0000;
   border: none;
   color: rgb(8, 8, 8);
-  font-size: 1.5rem;
   font-weight: bold;
   padding: 6px 12px;
-  /* border-radius: 20px; */
+  border-radius: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -151,10 +156,9 @@
 
 .navButton {
   position: absolute;
-  /* top: 50%; */
+  top: 50%;
   transform: translateY(-50%);
-  /* background: rgba(255, 255, 255, 0.3); */
-  color: white;
+  background: rgba(148, 147, 147, 0.3);
   border: none;
   padding: 20px 25px;
   cursor: pointer;
@@ -176,6 +180,7 @@
   right: 20px;
   outline: none;
   box-shadow: none;
+  background: rgba(148, 147, 147, 0.3);
 }
 
 /* Mapa.module.css */
@@ -388,21 +393,21 @@
 } */
 
 .searchBox {
-  position: absolute;
+  position: fixed;
   top: 10px;
-  left: 16%; /* Centrado horizontal */
+  left: 50%;
   transform: translateX(-50%);
   z-index: 10;
-  width: 75%; /* Ancho responsivo para móviles */
-  max-width: 400px; /* Límite de ancho para desktops */
-  padding: 12px 16px; /* Aumenta el padding para más espacio */
+  width: 75%;
+  max-width: 400px;
+  padding: 12px 16px;
   font-size: 1rem;
-  border: none; /* Elimina el borde */
-  border-radius: 25px; /* Bordes redondeados */
+  border: none;
+  border-radius: 25px;
   background-color: white;
   color: #333;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); /* Sombra sutil */
-  outline: none; /* Quita el contorno al hacer clic */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  outline: none;
 }
 
 /* Opcional: Estilo al enfocar la barra de búsqueda */
@@ -556,14 +561,13 @@
 }
 
 .toggleArrow {
-  position: absolute;
+  position: sticky;
   top: 50%;
-  left: -10px;
-  transform: translateY(-50%);
+  transform: translateY(-50%) translateX(-400%);
+  margin-left: -18px;
   background: #007acc;
   color: white;
   border: none;
-  /* border-radius: 50%;  */
   width: 35px;
   height: 35px;
   cursor: pointer;
@@ -571,9 +575,15 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  z-index: 10;
   transition: background 0.3s ease;
   font-size: 1.5rem;
+  z-index: 100;
+}
+
+.sidebarCollapsed .toggleArrow {
+  /* top: 10px;
+  right: 10px; */
+  transform: translateY(-25%) translateX(-100%);
 }
 
 .toggleArrow:hover {
@@ -583,6 +593,87 @@
 .toggleArrow:focus {
   outline: none;
   box-shadow: none; /* Opcional: elimina cualquier sombra que pueda aparecer */
+}
+/* auth button & tooltip */
+.authButtonContainer {
+  position: absolute;
+  top: 10px; /* Ajusta la posición para que esté justo arriba */
+  right: 10px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+}
+
+.authButton {
+  background-color: #fff;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.authButton:hover {
+  transform: scale(1.05);
+  background-color: #f1f1f1;
+}
+
+.authIcon {
+  width: 24px;
+  height: 24px;
+  color: #333;
+}
+
+.authTooltip {
+  background-color: #fff;
+  color: #333;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  right: 60px;
+  top: 0; /* Asegura que el tooltip se alinee con el botón */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(0); /* Elimina la traslación vertical inicial */
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+  min-width: 200px;
+  font-family: Arial, sans-serif;
+}
+
+.authButtonContainer:hover .authTooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.authTooltip p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.authLinks {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.authLink {
+  color: #007acc;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.authLink:hover {
+  text-decoration: underline;
 }
 /* 
 @media screen and (max-width: 768px) {

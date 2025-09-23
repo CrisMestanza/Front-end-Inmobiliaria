@@ -15,9 +15,7 @@ export default function Principal() {
   useEffect(() => {
     const fetchInmobiliarias = async () => {
       try {
-        const res = await fetch(
-          "https://apiinmo.y0urs.com/api/listInmobiliaria/"
-        );
+        const res = await fetch("http://127.0.0.1:8000/api/listInmobiliaria/");
         const data = await res.json();
         setInmobiliarias(data);
       } catch (err) {
@@ -39,7 +37,7 @@ export default function Principal() {
     if (confirm) {
       try {
         const res = await fetch(
-          `https://apiinmo.y0urs.com/api/deleteInmobiliaria/${idinmobilaria}/`,
+          `http://127.0.0.1:8000/api/deleteInmobiliaria/${idinmobilaria}/`,
           {
             method: "PUT",
           }
@@ -83,7 +81,7 @@ export default function Principal() {
         }}
       >
         <h1 style={{ color: "black", textAlign: "center" }}>
-          GESTIÓN DE INMOBILIARIA
+          Gestión de Inmobiliaria
         </h1>
         <button onClick={() => setShowModal(true)} className={style.addBtn}>
           Agregar Inmobiliaria

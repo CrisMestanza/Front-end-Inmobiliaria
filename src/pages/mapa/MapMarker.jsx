@@ -34,7 +34,7 @@ export default function ProyectoMarker({ proyecto, onClick }) {
     async function fetchPuntos() {
       try {
         const res = await axios.get(
-          `https://apiinmo.y0urs.com/api/listPuntosProyecto/${proyecto.idproyecto}`
+          `http://127.0.0.1:8000/api/listPuntosProyecto/${proyecto.idproyecto}`
         );
         const puntos = res.data;
 

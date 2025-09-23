@@ -24,6 +24,7 @@ export default function ProyectoModal({ onClose, idinmobilaria }) {
     latitud: "",
     longitud: "",
     puntos: [],
+    imagenes: [],
   });
 
   const mapRef = useRef(null);
@@ -76,31 +77,46 @@ export default function ProyectoModal({ onClose, idinmobilaria }) {
     window.google.maps.event.addListener(path, "set_at", updatePath);
   };
 
+  const handleImagenesChange = (e) => {
+    const newFiles = Array.from(e.target.files).map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setForm({ ...form, imagenes: [...form.imagenes, ...newFiles] });
+  };
+
+  const removeImagen = (index) => {
+    const imagenes = [...form.imagenes];
+    URL.revokeObjectURL(imagenes[index].preview);
+    imagenes.splice(index, 1);
+    setForm({ ...form, imagenes });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Formulario antes de enviar:", form);
-    const payload = {
-      idinmobilaria: idinmobilaria,
-      nombreproyecto: form.nombreproyecto,
-      descripcion: form.descripcion,
-      latitud: form.latitud,
-      longitud: form.longitud,
-      puntos: form.puntos,
-    };
-
-    console.log("Payload que envío:", payload);
 
     try {
-      const res = await fetch(
-        "https://apiinmo.y0urs.com/api/registerProyecto/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      // 👉 Usar FormData en lugar de JSON
+      const formData = new FormData();
+      formData.append("idinmobilaria", idinmobilaria);
+      formData.append("nombreproyecto", form.nombreproyecto);
+      formData.append("descripcion", form.descripcion);
+      formData.append("latitud", form.latitud);
+      formData.append("longitud", form.longitud);
+
+      // Enviar puntos como JSON (convertido a string)
+      formData.append("puntos", JSON.stringify(form.puntos));
+
+      // Adjuntar imágenes
+      form.imagenes.forEach((img) => {
+        formData.append("imagenes", img.file);
+      });
+
+      const res = await fetch("http://127.0.0.1:8000/api/registerProyecto/", {
+        method: "POST",
+        body: formData, // 🚨 Importante: no poner headers "Content-Type"
+      });
 
       if (res.ok) {
         alert("✅ Proyecto registrado con éxito");
@@ -129,7 +145,7 @@ export default function ProyectoModal({ onClose, idinmobilaria }) {
         <form className={style.formContainer} onSubmit={handleSubmit}>
           <h2 style={{ color: "black" }}>Registrar Proyecto</h2>
 
-          <label>Nombre Proyecto:</label>
+          <h3 style={{ color: "black" }}>Nombre del Proyecto</h3>
           <input
             name="nombreproyecto"
             value={form.nombreproyecto}
@@ -138,7 +154,7 @@ export default function ProyectoModal({ onClose, idinmobilaria }) {
             required
           />
 
-          <label>Descripción:</label>
+          <h3 style={{ color: "black" }}>Descripción</h3>
           <textarea
             name="descripcion"
             value={form.descripcion}
@@ -183,6 +199,29 @@ export default function ProyectoModal({ onClose, idinmobilaria }) {
                 />
               )}
             </GoogleMap>
+          </div>
+          <h3 style={{ color: "black" }}>
+            Imágenes Referenciales del Proyecto
+          </h3>
+          <input
+            type="file"
+            multiple
+            onChange={handleImagenesChange}
+            className={style.input}
+          />
+          <div className={style.previewContainer}>
+            {form.imagenes.map((img, i) => (
+              <div key={i} className={style.previewItem}>
+                <img src={img.preview} alt={`preview-${i}`} />
+                <button
+                  type="button"
+                  className={style.removeBtn}
+                  onClick={() => removeImagen(i)}
+                >
+                  ❌
+                </button>
+              </div>
+            ))}
           </div>
 
           <button type="submit" className={style.submitBtn}>

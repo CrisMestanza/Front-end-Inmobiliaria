@@ -14,7 +14,7 @@ export default function ProyectosList() {
     const fetchProyectos = async () => {
       try {
         const res = await fetch(
-          `https://apiinmo.y0urs.com/api/getProyectoInmo/${idinmobilaria}`
+          `http://127.0.0.1:8000/api/getProyectoInmo/${idinmobilaria}`
         );
         const data = await res.json();
         setProyectos(data);
@@ -37,7 +37,7 @@ export default function ProyectosList() {
         }}
       >
         <h1 style={{ color: "black", textAlign: "center" }}>
-          LISTA DE PROYECTOS
+          Gestión de Inmobiliaria
         </h1>
 
         <div
@@ -63,19 +63,13 @@ export default function ProyectosList() {
             marginTop: "20px",
           }}
         >
-          <thead style={{ color: "black" }}>
+          <thead style={{ color: "black", alignContent: "center" }}>
             <tr style={{ background: "#0077b6", color: "#fff" }}>
-              <th className={style.tableStyle} style={{ padding: "10px" }}>
-                N°
-              </th>
               <th className={style.tableStyle} style={{ padding: "10px" }}>
                 Nombre Proyecto
               </th>
               <th className={style.tableStyle} style={{ padding: "10px" }}>
                 Descripción
-              </th>
-              <th className={style.tableStyle} style={{ padding: "10px" }}>
-                Precio
               </th>
               <th className={style.tableStyle} style={{ padding: "10px" }}>
                 Latitud
@@ -92,20 +86,11 @@ export default function ProyectosList() {
             </tr>
           </thead>
           <tbody>
-            {proyectos.map((proyecto, index) => (
+            {proyectos.map((proyecto) => (
               <tr
                 key={proyecto.idproyecto}
                 style={{ borderBottom: "1px solid #ccc" }}
               >
-                <td
-                  style={{
-                    padding: "10px",
-                    color: "black",
-                    textAlign: "center",
-                  }}
-                >
-                  {index + 1}
-                </td>
                 <td
                   style={{
                     padding: "10px",
@@ -123,15 +108,6 @@ export default function ProyectosList() {
                   }}
                 >
                   {proyecto.descripcion}
-                </td>
-                <td
-                  style={{
-                    padding: "10px",
-                    color: "black",
-                    textAlign: "center",
-                  }}
-                >
-                  {proyecto.precio}
                 </td>
                 <td
                   style={{
@@ -175,7 +151,7 @@ export default function ProyectosList() {
                         )
                       ) {
                         await fetch(
-                          `https://apiinmo.y0urs.com/api/deleteProyecto/${proyecto.idproyecto}/`,
+                          `http://127.0.0.1:8000/api/deleteProyecto/${proyecto.idproyecto}/`,
                           {
                             method: "PUT",
                           }

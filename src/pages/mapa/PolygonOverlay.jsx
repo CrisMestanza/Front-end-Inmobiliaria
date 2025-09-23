@@ -53,6 +53,7 @@ const PolygonOverlay = ({
   showLados = false,
   label,
   hovered,
+  options = {},
 }) => {
   if (!puntos || puntos.length < 2) return null;
 
@@ -64,24 +65,45 @@ const PolygonOverlay = ({
     lng: parseFloat(p.longitud),
   }));
 
-  // 🔹 Cerrar polígono
-  if (path.length > 2) {
-    path.push(path[0]);
-  }
+  // if (path.length > 2) {
+  //   path.push(path[0]);
+  // }
 
   const centroide = path.length > 2 ? calcularCentroide(path) : null;
+
+  const defaultOptions = {
+    fillColor: hovered ? darkenColor(color, 0.3) : color,
+    fillOpacity: 0.35,
+    strokeColor: color,
+    strokeOpacity: 1,
+    strokeWeight: 2,
+    clickable: true,
+    zIndex: 2,
+  };
+
+  const combinedOptions = {
+    ...defaultOptions,
+    ...options, // Las opciones pasadas desde el padre sobrescriben las predeterminadas
+    fillColor:
+      options.fillColor !== undefined
+        ? options.fillColor
+        : defaultOptions.fillColor,
+  };
 
   return (
     <>
       <Polygon
         path={path}
-        options={{
-          fillColor: hovered ? darkenColor(color, 0.3) : color,
-          fillOpacity: 0.1,
-          strokeColor: color,
-          strokeOpacity: 1,
-          strokeWeight: 2,
-        }}
+        // options={{
+        //   fillColor: hovered ? darkenColor(color, 0.3) : color,
+        //   fillOpacity: 0.35,
+        //   strokeColor: color,
+        //   strokeOpacity: 1,
+        //   strokeWeight: 2,
+        //   clickable: true,
+        //   zIndex: 2,
+        // }}
+        options={combinedOptions}
         onClick={onClick}
         onMouseOver={onMouseOver}
         onMouseOut={onMouseOut}

@@ -20,9 +20,19 @@ export default function Aside() {
             Agregar
           </Link>
 
+          <Link to="/login" className={styles.link}>
+            <FaUser style={{ marginRight: "10px", fontSize: "30px" }} />
+            Login
+          </Link>
+
           <Link to="/" className={styles.link}>
             <FaMapMarkedAlt style={{ marginRight: "10px", fontSize: "30px" }} />
             Ver Mapa
+          </Link>
+
+          <Link to="/panel" className={styles.link}>
+            <FaUser style={{ marginRight: "10px", fontSize: "30px" }} />
+            Panel
           </Link>
         </nav>
       </div>

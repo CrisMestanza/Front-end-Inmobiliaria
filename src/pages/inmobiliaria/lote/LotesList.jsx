@@ -1,20 +1,22 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Aside from "../../../components/Aside";
-import InmobiliariaModal from "./agregarLote"; // ✅ usa el nombre correcto
+import InmobiliariaModal from "./agregarLote";
+import IconoModal from "../proyecto/icono/IconoModal";
 import style from "../agregarInmo.module.css";
 
 export default function LotesList() {
   const { idproyecto } = useParams();
   const navigate = useNavigate();
   const [lotes, setLotes] = useState([]);
-  const [showModal, setShowModal] = useState(false); // ✅ controla modal
+  const [showModal, setShowModal] = useState(false);
+  const [showIconoModal, setShowIconoModal] = useState(false);
 
   useEffect(() => {
     const fetchLotes = async () => {
       try {
         const res = await fetch(
-          `https://apiinmo.y0urs.com/api/getLoteProyecto/${idproyecto}`
+          `http://127.0.0.1:8000/api/getLoteProyecto/${idproyecto}`
         );
         const data = await res.json();
         setLotes(data);
@@ -36,7 +38,9 @@ export default function LotesList() {
           background: "#fff",
         }}
       >
-        <h1 style={{ color: "black", textAlign: "center" }}>LISTA DE LOTES</h1>
+        <h1 style={{ color: "black", textAlign: "center" }}>
+          Gestión de Proyecto
+        </h1>
 
         <div
           style={{
@@ -53,6 +57,12 @@ export default function LotesList() {
             Agregar registro
           </button>
         </div>
+        <button
+          onClick={() => setShowIconoModal(true)}
+          className={style.addBtn}
+        >
+          Agregar íconos
+        </button>
 
         <table
           style={{
@@ -176,7 +186,7 @@ export default function LotesList() {
                         )
                       ) {
                         await fetch(
-                          `https://apiinmo.y0urs.com/api/deleteLote/${lote.idlote}/`,
+                          `http://127.0.0.1:8000/api/deleteLote/${lote.idlote}/`,
                           {
                             method: "PUT",
                           }
@@ -198,6 +208,12 @@ export default function LotesList() {
         {showModal && (
           <InmobiliariaModal
             onClose={() => setShowModal(false)}
+            idproyecto={idproyecto}
+          />
+        )}
+        {showIconoModal && (
+          <IconoModal
+            onClose={() => setShowIconoModal(false)}
             idproyecto={idproyecto}
           />
         )}

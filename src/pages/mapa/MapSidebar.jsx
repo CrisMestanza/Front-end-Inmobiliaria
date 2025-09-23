@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaFacebook,
   FaWhatsapp,
@@ -23,6 +23,25 @@ const MapSidebar = ({
   const [showSidebarMobile, setShowSidebarMobile] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (fullscreenImgIndex !== null) {
+      const handleKeyDown = (e) => {
+        if (e.key === "ArrowLeft") {
+          setFullscreenImgIndex(
+            (fullscreenImgIndex - 1 + imagenes.length) % imagenes.length
+          );
+        } else if (e.key === "ArrowRight") {
+          setFullscreenImgIndex((fullscreenImgIndex + 1) % imagenes.length);
+        } else if (e.key === "Escape") {
+          setFullscreenImgIndex(null);
+        }
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [fullscreenImgIndex, imagenes.length]);
 
   if (!inmo || !lote) return null;
 
@@ -102,8 +121,11 @@ const MapSidebar = ({
               </a>
             </div>
 
-            <h3 style={{ color: "black", padding: "0px" }}>{lote.nombre}</h3>
-
+            <h3>{lote.nombre}</h3>
+            <p className={styles.tipo}>
+              <FaMapMarkedAlt size={20} color="#2c3e50" />{" "}
+              <span>Lote / Terreno</span>
+            </p>
             <p className={styles.descripcion}>{lote.descripcion}</p>
             <h3 style={{ color: "black" }}>Distancia:</h3>
             <div className={styles.distancia}>
@@ -129,21 +151,8 @@ const MapSidebar = ({
                 )}
               </p>
             </div>
-            <p className={styles.tipo}>
-              {inmo.idtipoinmobiliaria === 1 && (
-                <>
-                  <FaMapMarkedAlt size={20} color="#2c3e50" />{" "}
-                  <span>Lote / Terreno</span>
-                </>
-              )}
-              {inmo.idtipoinmobiliaria === 2 && (
-                <>
-                  <FaHome size={20} color="#2c3e50" /> <span>Casa</span>
-                </>
-              )}
-            </p>
 
-            <h2 className={styles.descripcion}>Precio al Contado:</h2>
+            <h3>Precio al Contado:</h3>
             <h2 className={styles.descripcion}>S/.{lote.precio}</h2>
             <h3>¿Quieres cotizar un crédito?</h3>
             <button onClick={() => setIsModalOpen(true)}>Cotizar</button>
@@ -161,7 +170,7 @@ const MapSidebar = ({
                   {visibleImages.map((img) => (
                     <img
                       key={img.idimagenes}
-                      src={`https://apiinmo.y0urs.com${img.imagen}`}
+                      src={`http://127.0.0.1:8000${img.imagen}`}
                       alt="Inmobiliaria"
                       className={styles.thumbnail}
                       onClick={() =>
@@ -185,7 +194,6 @@ const MapSidebar = ({
 
         {fullscreenImgIndex !== null && (
           <div className={styles.fullscreenOverlay}>
-            {/* Botón ANTERIOR */}
             <button
               className={`${styles.navButton} ${styles.prevButton}`}
               onClick={(e) => {
@@ -199,7 +207,7 @@ const MapSidebar = ({
             </button>
 
             <img
-              src={`https://apiinmo.y0urs.com${imagenes[fullscreenImgIndex].imagen}`}
+              src={`http://127.0.0.1:8000${imagenes[fullscreenImgIndex].imagen}`}
               alt="Pantalla completa"
               className={styles.fullscreenImg}
             />

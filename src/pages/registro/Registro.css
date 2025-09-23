@@ -1,0 +1,339 @@
+/* src/components/Registro/Registro.css */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #288a8d8c;
+  color: #333;
+}
+
+.register-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.form-wrapper {
+  display: flex;
+  width: 100%;
+  max-width: 950px;
+  min-height: 600px;
+  background-color: #f3f2f2;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.form-wrapper {
+  zoom: 0.75;
+}
+
+.steps-sidebar {
+  flex-basis: 350px; /* Ancho ajustado para centrar mejor los círculos */
+  background: linear-gradient(135deg, #008080, #006666);
+  color: #fff;
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centrado verticalmente */
+  align-items: flex-start;
+  position: relative;
+  overflow: hidden;
+}
+
+.steps-sidebar::before {
+  content: "";
+  position: absolute;
+  top: -100px;
+  left: -100px;
+  width: 250px;
+  height: 250px;
+  background: rgba(219, 204, 204, 0.1);
+  border-radius: 50%;
+}
+
+.steps-sidebar::after {
+  content: "";
+  position: absolute;
+  bottom: -50px;
+  right: -50px;
+  width: 150px;
+  height: 150px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.step-header {
+  margin-bottom: 50px;
+}
+
+.step-header h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px;
+  opacity: 0.6;
+  transition: all 0.4s ease-in-out;
+  position: relative;
+}
+
+.step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  /* Calcula la posición left para centrar:
+     (ancho del círculo / 2) - (ancho de la línea / 2) */
+  left: calc(20px - 1px); /* (40px / 2) - (2px / 2) */
+  top: 40px; /* Ajusta la posición vertical de la línea si es necesario */
+  height: 40px;
+  width: 2px;
+  background-color: rgba(255, 255, 255, 0.3);
+  z-index: 1;
+}
+
+.step.active:not(:last-child)::after {
+  background-color: #fff;
+}
+
+.step-circle {
+  width: 40px; /* Aumentar tamaño del círculo */
+  height: 40px; /* Aumentar tamaño del círculo */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(231, 225, 225, 0.281);
+  color: #fff;
+  font-size: 1.1rem; /* Ajustar tamaño de fuente dentro del círculo */
+  margin-right: 20px;
+  z-index: 2; /* ¡CLAVE! Asegura que el círculo esté por encima de la línea */
+  transition: all 0.4s ease-in-out;
+  border: 2px solid transparent;
+}
+
+.step.active .step-circle {
+  background-color: #ffffff;
+  color: #008080;
+  border-color: #008080;
+}
+
+.step-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.form-content {
+  flex: 1;
+  /* padding: 20px 60px 20px 20px; */
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.form-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-align: center;
+  color: #008080;
+  padding-top: 5dvh;
+}
+
+.form-step {
+  width: 100%;
+  max-width: 600px;
+}
+
+.form-step.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: all;
+  position: relative;
+}
+
+.form-step h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 30px;
+  color: #333;
+  text-align: center;
+}
+
+.form-row {
+  margin-bottom: 25px;
+}
+
+.form-row label {
+  display: block;
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-row input:focus,
+.form-row select:focus,
+.form-row textarea:focus {
+  outline: none;
+  border-color: #008080;
+  box-shadow: 0 0 0 3px rgba(0, 128, 128, 0.2);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  /* margin-top: 40px; */
+}
+
+.next-btn,
+.back-btn,
+.submit-btn {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.next-btn,
+.submit-btn {
+  background-color: #008080;
+  color: #fff;
+}
+
+.next-btn:hover,
+.submit-btn:hover {
+  background-color: #006666;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.back-btn {
+  background-color: #e0e0e0;
+  color: #555;
+}
+
+.back-btn:hover {
+  background-color: #d0d0d0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.next-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.summary-step {
+  padding: 40px;
+}
+
+.summary-section {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.summary-section h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #008080;
+  margin-top: 0;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 5px;
+}
+
+.summary-section p {
+  line-height: 1.6;
+  margin: 8px 0;
+  color: #555;
+}
+
+.summary-section strong {
+  color: #333;
+}
+
+/* Enlaces externos */
+.outside-links-container {
+  position: absolute;
+  top: 1.5rem;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2rem;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.outside-link-btn {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+  background-color: rgba(0, 128, 128, 0.9);
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.outside-link-btn:hover {
+  background-color: #006666;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.outside-link-btn.left {
+  margin-left: 0;
+}
+
+.outside-link-btn.right {
+  margin-right: 0;
+}
+
+@media (max-width: 992px) {
+  .form-wrapper {
+    flex-direction: column;
+    min-height: auto;
+  }
+  .steps-sidebar {
+    flex-basis: auto;
+    width: 100%;
+    padding: 30px 20px;
+  }
+  .step-text {
+    font-size: 1rem;
+  }
+}

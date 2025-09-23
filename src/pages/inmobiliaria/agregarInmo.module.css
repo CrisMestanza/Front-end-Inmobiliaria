@@ -39,9 +39,11 @@
 }
 
 .removeBtn {
-  padding: 6px 12px;
-  background: linear-gradient(135deg, #ff3c3c, #ff7070);
-  color: white;
+  /* padding: 6px 12px; */
+  /* background: linear-gradient(135deg, #ff3c3c, #ff7070); */
+  /* background: rgb(254, 254, 254); */
+  /* border: #e03131; */
+  /* color: white; */
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -73,6 +75,7 @@ thead tr {
 .tableStyle {
   padding: 12px;
   font-weight: 600;
+  text-align: center;
 }
 
 tbody tr:nth-child(even) {
@@ -202,11 +205,12 @@ textarea.input {
 
 .previewItem .removeBtn {
   position: absolute;
-  top: -5px;
-  right: -5px;
+  top: -10px;
+  right: -8px;
   width: 24px;
   height: 24px;
   font-size: 12px;
   border-radius: 50%;
-  background: rgb(255, 60, 60);
+  background: rgba(255, 255, 255, 0);
+  border: #e03131;
 }

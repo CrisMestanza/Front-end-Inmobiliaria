@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaFacebook,
   FaWhatsapp,
@@ -21,13 +21,31 @@ const ProyectoSidebar = ({
   const [showSidebarMobile, setShowSidebarMobile] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
+  useEffect(() => {
+    if (fullscreenImgIndex !== null) {
+      const handleKeyDown = (e) => {
+        if (e.key === "ArrowLeft") {
+          setFullscreenImgIndex(
+            (fullscreenImgIndex - 1 + imagenes.length) % imagenes.length
+          );
+        } else if (e.key === "ArrowRight") {
+          setFullscreenImgIndex((fullscreenImgIndex + 1) % imagenes.length);
+        } else if (e.key === "Escape") {
+          setFullscreenImgIndex(null);
+        }
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [fullscreenImgIndex, imagenes.length]);
+
   if (!proyecto) return null;
 
-  const visibleImages = showAll ? imagenes : imagenes.slice(0, 3);
+  const visibleImages = showAll ? imagenes : imagenes.slice(0, 10);
 
   return (
     <>
-      {/* Botón móvil */}
       <button
         className={styles.showInfoBtn}
         onClick={() => setShowSidebarMobile(true)}
@@ -40,7 +58,6 @@ const ProyectoSidebar = ({
           showSidebarMobile ? styles.sidebarMobileOpen : ">"
         } ${collapsed ? styles.sidebarCollapsed : "<"}`}
       >
-        {/* Botón flecha */}
         <button
           className={styles.toggleArrow}
           onClick={() => setCollapsed(!collapsed)}
@@ -48,7 +65,6 @@ const ProyectoSidebar = ({
           {collapsed ? "<" : ">"}
         </button>
 
-        {/* Botón cerrar */}
         <button
           onClick={() => {
             onClose();
@@ -93,13 +109,14 @@ const ProyectoSidebar = ({
               </a>
             </div>
 
-            <h3 style={{ color: "black", padding: "0px" }}>
-              {proyecto.nombreproyecto}
-            </h3>
-
+            <h3> {proyecto.nombreproyecto}</h3>
+            <p className={styles.tipo}>
+              <FaMapMarkedAlt size={20} color="#2c3e50" />{" "}
+              <span>Proyecto inmobiliario</span>
+            </p>
             <p className={styles.descripcion}>{proyecto.descripcion}</p>
 
-            <h3 style={{ color: "black" }}>Distancia:</h3>
+            <h3>Distancia:</h3>
             <div className={styles.distancia}>
               <p>
                 🚶 <strong className={styles.label}>Caminando:</strong>{" "}
@@ -124,19 +141,14 @@ const ProyectoSidebar = ({
               </p>
             </div>
 
-            <p className={styles.tipo}>
-              <FaMapMarkedAlt size={20} color="#2c3e50" />{" "}
-              <span>Proyecto inmobiliario</span>
-            </p>
-
             {imagenes.length > 0 && (
               <div className={styles.imagenesContainer}>
-                <h3 style={{ color: "black" }}>Imágenes</h3>
+                <h3>Imágenes</h3>
                 <div className={styles.imagenesGrid}>
                   {visibleImages.map((img) => (
                     <img
-                      key={img.idimagenes}
-                      src={`https://apiinmo.y0urs.com${img.imagen}`}
+                      key={img.idimagenesp}
+                      src={`http://127.0.0.1:8000${img.imagenproyecto}`}
                       alt="Proyecto"
                       className={styles.thumbnail}
                       onClick={() =>
@@ -145,14 +157,14 @@ const ProyectoSidebar = ({
                     />
                   ))}
                 </div>
-                {imagenes.length > 3 && !showAll && (
+                {/* {imagenes.length > 3 && !showAll && (
                   <button
                     onClick={() => setShowAll(true)}
                     className={styles.verMas}
                   >
                     Ver más imágenes
                   </button>
-                )}
+                )} */}
               </div>
             )}
           </>
@@ -160,7 +172,6 @@ const ProyectoSidebar = ({
 
         {fullscreenImgIndex !== null && (
           <div className={styles.fullscreenOverlay}>
-            {/* ANTERIOR */}
             <button
               className={`${styles.navButton} ${styles.prevButton}`}
               onClick={(e) => {
@@ -172,14 +183,11 @@ const ProyectoSidebar = ({
             >
               &lt;
             </button>
-
             <img
-              src={`https://apiinmo.y0urs.com${imagenes[fullscreenImgIndex].imagen}`}
+              src={`http://127.0.0.1:8000${imagenes[fullscreenImgIndex].imagenproyecto}`}
               alt="Pantalla completa"
               className={styles.fullscreenImg}
             />
-
-            {/* SIGUIENTE */}
             <button
               className={`${styles.navButton} ${styles.nextButton}`}
               onClick={(e) => {
@@ -190,13 +198,11 @@ const ProyectoSidebar = ({
             >
               &gt;
             </button>
-
-            {/* Cerrar */}
             <button
               className={styles.closeFullscreen}
               onClick={() => setFullscreenImgIndex(null)}
             >
-              ❌ Cerrar
+              Cerrar
             </button>
           </div>
         )}
