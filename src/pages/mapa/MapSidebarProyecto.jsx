@@ -70,7 +70,7 @@ const ProyectoSidebar = ({
             onClose();
             setShowSidebarMobile(false);
           }}
-          className={styles.closeBtn}
+          className={styles.closeBtn2}
         >
           X
         </button>
