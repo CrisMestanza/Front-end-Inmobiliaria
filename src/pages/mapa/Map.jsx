@@ -9,11 +9,12 @@ import {
 import ProyectoSidebar from "./MapSidebarProyecto";
 import MapSidebar from "./MapSidebar";
 import MapMarker from "./MapMarker";
-import MapButtons from "./MapButtons";
 import PolygonOverlay from "./PolygonOverlay";
 import styles from "./Mapa.module.css";
 
 const defaultCenter = { lat: -6.4882, lng: -76.365629 };
+const LIBRARIES = ["places"];
+
 
 const RANGOS_PRECIO = [
   { label: "S/. 5,000 - 15,000", value: "5000-15000" },
@@ -21,7 +22,7 @@ const RANGOS_PRECIO = [
   { label: "S/. 35,001 - 80,000", value: "35001-80000" },
   { label: "S/. 80,001 - 150,000", value: "80001-150000" },
   { label: "S/. 150,001 - 250,000", value: "150001-250000" },
-  { label: "S/. 250,001 - más", value: "250001-mas" },
+  { label: "S/. 250,001 - más", value: "250001-999999999" },
 ];
 
 const LotesOverlay = ({
@@ -101,11 +102,11 @@ const LotesOverlay = ({
 };
 
 function MyMap() {
+  // const [mapType, setMapType] = useState("roadmap");
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: "AIzaSyA0dsaDHTO3rx48cyq61wbhItaZ_sWcV94",
-    // googleMapsApiKey: "",
-    libraries: ["places"],
+    libraries:LIBRARIES,
   });
 
   const [currentPosition, setCurrentPosition] = useState(defaultCenter);
@@ -167,28 +168,42 @@ function MyMap() {
     }
   }, [selectedProyecto]);
 
-  useEffect(() => {
-    if (!selectedProyecto) return;
+useEffect(() => {
+  if (!selectedProyecto) return;
 
-    fetch(
-      `http://127.0.0.1:8000/api/getLoteProyecto/${selectedProyecto.idproyecto}`
-    )
-      .then((res) => res.json())
-      .then(async (lotes) => {
-        const lotesConPuntos = await Promise.all(
-          lotes.map(async (lote) => {
-            const resPuntos = await fetch(
-              `http://127.0.0.1:8000/api/listPuntos/${lote.idlote}`
-            );
-            const puntos = await resPuntos.json();
-            return { ...lote, puntos };
-          })
+  const cargarLotes = async () => {
+    let dataLotes;
+
+    if (selectedRango) {
+      // Usamos los lotes filtrados que ya guardamos en "lotes"
+      dataLotes = lotes.filter(
+        (l) => l.idproyecto === selectedProyecto.idproyecto
+      );
+    } else {
+      // Si no hay rango → pedimos todos los lotes del proyecto
+      const res = await fetch(
+        `http://127.0.0.1:8000/api/getLoteProyecto/${selectedProyecto.idproyecto}`
+      );
+      dataLotes = await res.json();
+    }
+
+    // A cada lote le agregamos sus puntos
+    const lotesConPuntos = await Promise.all(
+      dataLotes.map(async (lote) => {
+        const resPuntos = await fetch(
+          `http://127.0.0.1:8000/api/listPuntos/${lote.idlote}`
         );
-
-        setLotesProyecto(lotesConPuntos);
+        const puntos = await resPuntos.json();
+        return { ...lote, puntos };
       })
-      .catch(console.error);
-  }, [selectedProyecto]);
+    );
+
+    setLotesProyecto(lotesConPuntos);
+  };
+
+  cargarLotes().catch(console.error);
+}, [selectedProyecto, selectedRango, lotes]);
+
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/listTipoInmobiliaria/")
@@ -197,24 +212,90 @@ function MyMap() {
       .catch(console.error);
   }, []);
 
-  useEffect(() => {
-    if (selectedRango) {
-      fetch(`http://127.0.0.1:8000/api/rangoPrecio/${selectedRango}`)
-        .then((res) => res.json())
-        .then(setProyecto)
-        .catch(console.error);
-    } else if (selectedTipo) {
-      fetch(`http://127.0.0.1:8000/api/lote/${selectedTipo}`)
-        .then((res) => res.json())
-        .then(setProyecto)
-        .catch(console.error);
-    } else {
-      fetch("http://127.0.0.1:8000/api/listProyectos/")
-        .then((res) => res.json())
-        .then(setProyecto)
-        .catch(console.error);
+const handleTipoChange = (tipoId) => {
+  if (selectedTipo === tipoId) {
+    setSelectedTipo(""); // desmarcar si ya estaba seleccionado
+  } else {
+    setSelectedTipo(tipoId);
+  }
+};
+
+const handleRangoChange = (rango) => {
+  if (selectedRango === rango) {
+    console.log("Desmarcado:", rango);
+    setSelectedRango(""); // desmarcar si ya estaba seleccionado
+  } else {
+    setSelectedRango(rango);
+  }
+};
+
+useEffect(() => {
+    if (selectedTipo) {
+    // Detectar si es casa o lote
+    const tipo = tiposInmo.find((t) => t.idtipoinmobiliaria === selectedTipo);
+
+    if (tipo) {
+      if (tipo.idtipoinmobiliaria === 2) {
+        // CASAS
+        fetch(`http://127.0.0.1:8000/api/filtroCasaProyecto/${selectedTipo}`)
+          .then((res) => res.json())
+          .then((data) => {
+            setProyecto(data); // API ya devuelve proyectos
+          })
+          .catch(console.error);
+      } else if (tipo.idtipoinmobiliaria === 1) {
+        // LOTES
+        fetch(`http://127.0.0.1:8000/api/filtroCasaProyecto/${selectedTipo}`)
+          .then((res) => res.json())
+          .then((data) => {
+            setProyecto(data);
+          })
+          .catch(console.error);
+      }
     }
-  }, [selectedTipo, selectedRango]);
+  } else if (selectedRango) {
+  // Filtro por rango de precio
+fetch(`http://127.0.0.1:8000/api/rangoPrecio/${selectedRango}`)
+  .then((res) => res.json())
+  .then((data) => {
+    // Ahora data = { lotes: [...], proyectos: [...] }
+    setLotes(data.lotes || []);
+
+    // Extraer proyectos de los lotes
+    const proyectosUnicos = [];
+    const ids = new Set();
+    data.lotes.forEach((lote) => {
+      const p = lote.proyectos;
+      if (p && !ids.has(p.idproyecto)) {
+        ids.add(p.idproyecto);
+        proyectosUnicos.push(p);
+      }
+    });
+
+    // Además agregamos los proyectos que vienen directo en data.proyectos
+    if (Array.isArray(data.proyectos)) {
+      data.proyectos.forEach((p) => {
+        if (!ids.has(p.idproyecto)) {
+          ids.add(p.idproyecto);
+          proyectosUnicos.push(p);
+        }
+      });
+    }
+
+    setProyecto(proyectosUnicos);
+    console.log(proyectosUnicos)
+  })
+  .catch(console.error);
+
+}
+ else {
+    // Sin filtros → lista de proyectos
+    fetch("http://127.0.0.1:8000/api/listProyectos/")
+      .then((res) => res.json())
+      .then(setProyecto)
+      .catch(console.error);
+  }
+}, [selectedTipo, selectedRango]);
 
   const calculateInfo = (mode, proyecto) => {
     const service = new window.google.maps.DirectionsService();
@@ -266,79 +347,70 @@ function MyMap() {
     });
   };
 
-  const handleMarkerClick = async (proyecto) => {
-    try {
-      setRouteMode(null);
-      setDirections(null);
-      setWalkingInfo(null);
-      setDrivingInfo(null);
-      setLotesProyecto([]);
-      setPuntos([]);
-      setIconosProyecto([]);
+const handleMarkerClick = async (proyecto) => {
+  try {
+    setRouteMode(null);
+    setDirections(null);
+    setWalkingInfo(null);
+    setDrivingInfo(null);
+    setLotesProyecto([]);
+    setPuntos([]);
+    setIconosProyecto([]);
 
-      calculateInfo("WALKING", proyecto);
-      calculateInfo("DRIVING", proyecto);
+    calculateInfo("WALKING", proyecto);
+    calculateInfo("DRIVING", proyecto);
 
-      const resPuntos = await fetch(
-        `http://127.0.0.1:8000/api/listPuntosProyecto/${proyecto.idproyecto}`
+    const resPuntos = await fetch(
+      `http://127.0.0.1:8000/api/listPuntosProyecto/${proyecto.idproyecto}`
+    );
+    const dataPuntos = await resPuntos.json();
+    setPuntos(dataPuntos);
+    if (dataPuntos.length > 0 && mapRef.current) {
+      const bounds = new window.google.maps.LatLngBounds();
+      dataPuntos.forEach((p) =>
+        bounds.extend({
+          lat: parseFloat(p.latitud),
+          lng: parseFloat(p.longitud),
+        })
       );
-      const dataPuntos = await resPuntos.json();
-      setPuntos(dataPuntos);
-      if (dataPuntos.length > 0 && mapRef.current) {
-        const bounds = new window.google.maps.LatLngBounds();
-        dataPuntos.forEach((p) =>
-          bounds.extend({
-            lat: parseFloat(p.latitud),
-            lng: parseFloat(p.longitud),
-          })
-        );
-        mapRef.current.fitBounds(bounds);
-      }
+      mapRef.current.fitBounds(bounds);
+    }
 
+    let dataLotes;
+    if (selectedRango) {
+      // Si hay un rango, usamos los lotes filtrados
+      dataLotes = lotes.filter(
+        (l) => l.idproyecto === proyecto.idproyecto
+      );
+    } else {
+      // Si no, traemos todos los lotes del proyecto
       const resLotes = await fetch(
         `http://127.0.0.1:8000/api/getLoteProyecto/${proyecto.idproyecto}`
       );
-      const dataLotes = await resLotes.json();
-      setLotesProyecto(dataLotes);
-
-      const resInmo = await fetch(
-        `http://127.0.0.1:8000/api/getInmobiliaria/${proyecto.idinmobiliaria}`
-      );
-      const inmoData = await resInmo.json();
-
-      //Traer íconos del proyecto
-      const resIconos = await fetch(
-        `http://127.0.0.1:8000/api/list_iconos_proyecto/${proyecto.idproyecto}`
-      );
-      const dataIconos = await resIconos.json();
-      setIconosProyecto(dataIconos);
-
-      setselectedProyecto({
-        ...proyecto,
-        inmo: inmoData[0] ?? null,
-      });
-    } catch (err) {
-      console.error("Error cargando inmobiliaria:", err);
+      dataLotes = await resLotes.json();
     }
-  };
+    setLotesProyecto(dataLotes);
 
-  // const handleShowRoute = (mode) => {
-  //   setRouteMode(mode);
-  //   const service = new window.google.maps.DirectionsService();
-  //   service.route(
-  //     {
-  //       origin: currentPosition,
-  //       destination: {
-  //         lat: parseFloat(selectedProyecto.latitud),
-  //         lng: parseFloat(selectedProyecto.longitud),
-  //       },
-  //       travelMode: mode,
-  //     },
-  //     (result, status) => {
-  //       if (status === "OK") setDirections(result);
-  //     }
-  //   );
-  // };
+    const resInmo = await fetch(
+      `http://127.0.0.1:8000/api/getInmobiliaria/${proyecto.idinmobiliaria}`
+    );
+    const inmoData = await resInmo.json();
+
+    const resIconos = await fetch(
+      `http://127.0.0.1:8000/api/list_iconos_proyecto/${proyecto.idproyecto}`
+    );
+    const dataIconos = await resIconos.json();
+    setIconosProyecto(dataIconos);
+
+    setselectedProyecto({
+      ...proyecto,
+      inmo: inmoData[0] ?? null,
+    });
+  } catch (err) {
+    console.error("Error cargando inmobiliaria:", err);
+  }
+};
+
 
   useEffect(() => {
     if (isLoaded && inputRef.current) {
@@ -378,50 +450,51 @@ function MyMap() {
         className={styles.searchBox}
       />
 
-      {/* {showFilters && (
+      {showFilters && (
         <div className={styles.filterPanel}>
-          <button
-            className={styles.closeBtn}
-            onClick={() => setShowFilters(false)}
-          >
-            ⬅️ Ocultar filtro
-          </button>
+  <button
+    className={styles.closeBtn}
+    onClick={() => setShowFilters(false)}
+  >
+    ✖
+  </button>
 
-          <div className={styles.filterBoxTipo}>
-            <label>QUIERO VER:</label>
-            {tiposInmo.map((tipo) => (
-              <label
-                className={styles.checkboxLabel}
-                key={tipo.idtipoinmobiliaria}
-              >
-                <input
-                  className={styles.checkboxInput}
-                  type="checkbox"
-                  checked={selectedTipo === tipo.idtipoinmobiliaria}
-                  onChange={() => handleTipoChange(tipo.idtipoinmobiliaria)}
-                />
-                {tipo.nombre}
-              </label>
-            ))}
-          </div>
+  <div className={styles.filterGroup}>
+    <h4>Quiero ver:</h4>
+    <div className={styles.filterOptions}>
+      {tiposInmo.map((tipo) => (
+        <button
+          key={tipo.idtipoinmobiliaria}
+          className={`${styles.filterChip} ${
+            selectedTipo === tipo.idtipoinmobiliaria ? styles.active : ""
+          }`}
+          onClick={() => handleTipoChange(tipo.idtipoinmobiliaria)}
+        >
+          {tipo.nombre}
+        </button>
+      ))}
+    </div>
+  </div>
 
-          <div className={styles.filterBoxPrecio}>
-            <label>RANGO PRECIOS:</label>
-            {RANGOS_PRECIO.map((rango) => (
-              <label className={styles.checkboxLabel} key={rango.value}>
-                <input
-                  className={styles.checkboxInput}
-                  type="checkbox"
-                  name="rangoPrecio"
-                  checked={selectedRango === rango.value}
-                  onChange={() => handleRangoChange(rango.value)}
-                />
-                {rango.label}
-              </label>
-            ))}
-          </div>
-        </div>
-      )} */}
+  <div className={styles.filterGroup}>
+    <h4>Rango de precios:</h4>
+    <div className={styles.filterOptions}>
+      {RANGOS_PRECIO.map((rango) => (
+        <button
+          key={rango.value}
+          className={`${styles.filterChip} ${
+            selectedRango === rango.value ? styles.active : ""
+          }`}
+          onClick={() => handleRangoChange(rango.value)}
+        >
+          {rango.label}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
+
+      )}
 
       {!showFilters && (
         <button className={styles.openBtn} onClick={() => setShowFilters(true)}>
@@ -437,9 +510,10 @@ function MyMap() {
         options={{
           gestureHandling: "greedy",
           zoomControl: true,
-          mapTypeControl: false,
+          mapTypeControl: true,
           streetViewControl: false,
           fullscreenControl: false,
+          // mapTypeId: mapType,
         }}
       >
         {puntos.length === 0 && <Marker position={currentPosition} />}
@@ -481,7 +555,6 @@ function MyMap() {
             puntos={puntos}
             color="#106e2eff"
             showLados={false}
-            // options={{ clickable: false, zIndex: selectedLote ? 0 : 1 }}
             options={{
               clickable: false,
               fillColor: "transparent",

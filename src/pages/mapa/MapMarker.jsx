@@ -58,7 +58,7 @@ export default function ProyectoMarker({ proyecto, onClick }) {
       onClick={() => onClick(proyecto)}
       icon={{
         url:
-          proyecto.estado === 1
+          proyecto.estado === 1 && proyecto.idtipoinmobiliaria === 1
             ? "/proyectoicono.png"
             : "https://cdn-icons-png.freepik.com/512/11130/11130373.png",
         scaledSize: { width: 60, height: 60 },
